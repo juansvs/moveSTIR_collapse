@@ -193,7 +193,7 @@ Through these simulations we explore how the expected FOI is influenced by corre
 \subsection*{Empirical application - White-tailed deer}
 
 To test the role of space-use and correlated movements on potential transmission risk in a real system, we applied the PMoveSTIR model to GPS-tracking data for five white-tailed deer from Ames Plantation, Tennessee, USA (one adult male and four adult females). 
-Deer were captured and equipped with GPS collars that recorded fixes every 30 minutes (Lotek LiteTrack Iridium 420, Newmarket, Ontario, Canada; IACUC \# 2850-1021 from the University of Tennessee).  All individuals used in this study were captured at the end of March 2023 but we only included movement data from May to June in this study, to eliminate any effects of capture.  As for the simulations, we used CTMM and AKDE to estimate individual UDs \citep{Calabrese2016}. We used the CTMMs to interpolate the positions to regular 10-minute intervals, to fill in missed positions, and to get the same timestamps across individuals \citep{Yang2023}.  Assuming a threshold contact distance of $d=10$m, we divided the landscape in a grid of 10x10m cells. 
+Deer were captured and equipped with GPS collars that recorded fixes every 30 minutes (Lotek LiteTrack Iridium 420, Newmarket, Ontario, Canada; IACUC \# 2850-1021).  All individuals used in this study were captured at the end of March 2023 but we only included movement data from May to June in this study, to eliminate any effects of capture.  As for the simulations, we used CTMM and AKDE to estimate individual UDs \citep{Calabrese2016}. We used the CTMMs to interpolate the positions to regular 10-minute intervals, to fill in missed positions, and to get the same timestamps across individuals \citep{Yang2023}.  Assuming a threshold contact distance of $d=10$m, we divided the landscape in a grid of 10x10m cells. 
 
 We modeled two hypothetical pathogens. The first pathogen had a relatively short persistence time in the environment, surviving for an average of 1 hour  ($\nu=1\text{ h}^{-1 }$). In this case, transmission is largely direct and this might represent a pathogen like SARS-COV-2, which can infect and transmit between white-tailed deer \citep{Hale2022}. The second hypothetical pathogen had a long persistence time, remaining viable for over a year on average ($\nu=0.9 \text{ yr }^{-1}$). In this case, transmission is largely indirect and might reflect a pathogen like CWD, which can transmit directly and indirectly between deer and can persist for years in the environment \citep{Saunders2012a}. The $\beta'$ and $\lambda$ parameters are scalars in PMoveSTIR and do not affect any relative comparisons, so we set them both to unity. As in the simulations, we pre-whitened and filtered correlation values to remove potentially spurious correlations. 
 We used these data to explore how differences in overlap across home ranges and correlated movement influence the expected FOI with real animal trajectories.
@@ -357,7 +357,7 @@ Our analyses emphasize the importance of this next step by showing that correlat
 
 \section*{Data and Code Availability}
 
-Data used in the manuscript, as well as code to generate simulations and analyze data, are available at \texttt{https://anonymous.4open.science/r/moveSTIR\_collapse-31E0/README.md}
+Data used in the manuscript, as well as code to generate simulations and analyze data, are available at \texttt{https://anonymous.4open.science/r/moveSTIR\_collapse-31E0}
 
 \bibliographystyle{amnat.bst}
 \bibliography{references.bib}
