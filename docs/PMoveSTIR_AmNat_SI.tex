@@ -84,6 +84,79 @@
 % \doublespacing
 \linenumbers
 
+\section*{Appendix 0: A derivation of MoveSTIR}
+
+The full derivation of MoveSTIR is provided in \cite{Wilber2022}. The text below is taken directly from \cite{Wilber2022} and is used to 
+
+MoveSTIR begins from a simple compartmental host-parasite model that tracks \textbf{S}usceptible and \textbf{I}nfected host density and the density of the \textbf{P}athogen in the environment. We make the following assumptions: i) the force of infection (FOI) experienced by a susceptible host is a linear function of pathogen density in the environment $\beta P$, where $\beta$ is the transmission rate that combines rates of acquisition and contact, ii) infected hosts deposit pathogen at rate $\lambda$, iii) the pathogen decays in the environment at rate $\nu$, iv) the pathogen is well-mixed in the area where contact and acquisition occur, and v) the infection process does not substantially deplete the pathogen in the environment \citep{Dwyer1997a,Fenton2015}.  These assumptions provide a reasonable starting point for MoveSTIR but can be readily adjusted to account for non-linear FOI or extended to account for states such as \textbf{E}xposed and \textbf{R}ecovered. For simplicity, we also assume that \textbf{I}nfected hosts recover at rate $\gamma$ and are immediately \textbf{S}usceptible.
+
+The following equations describe the infection dynamics in a host population
+
+\begin{equation}
+    \begin{aligned}
+        \frac{d S}{dt} &= - \beta P S + \gamma I  \\
+        \frac{d I}{dt} &= \beta P S - \gamma I \\
+        \frac{d P}{dt} &= \lambda I - \nu P
+     \end{aligned}
+     \label{eq:base_model}
+\end{equation}
+where we initially assume a constant population size of $S + I = N$ and no births or deaths. Equation \ref{eq:base_model} is applicable to both microparasites (e.g., bacteria and viruses) or macroparasites (e.g., helminths) with a simple life cycle \citep[e.g.,][]{Fenton2015}.
+
+We can equivalently express equation \ref{eq:base_model} as a renewal equation \citep{VandenDriessche2002}, namely
+
+\begin{equation}
+    \begin{aligned}
+        \frac{d S(t)}{dt} &= - \beta P(t) S(t) + \gamma I(t) \\
+        \frac{d I(t)}{dt} &= \beta P(t) S(t) - \gamma I(t) \\
+        P(t) &= P_0(t) +  \int_{0}^{t} \lambda I(u) e^{-\nu(t - u)} du
+     \end{aligned}
+     \label{eq:ghosts}
+\end{equation}
+
+In equation \ref{eq:ghosts}, $I(u)$ gives the density of infected individuals at some previous time $u$, $u < t$. The function $e^{-\nu(t - u)}$ defines the pathogen survival function in the environment, assuming that the pathogen decays at a constant rate $\nu$. We could readily replace $e^{-\nu(t - u)}$ with any survival function reflective of the pathogen of interest. The parameter $P_0(t)$ is the density of pathogen present at time 0 that are still present at time $t$.
+
+We can then substitute in the expression of $P(t)$ to re-write $\frac{d I(t)}{dt}$ as a function of $I(u)$
+
+\begin{equation}
+    \frac{d I(t)}{dt} = S(t) \beta \int_{0}^{t} \lambda I(u) e^{-\nu(t - u)} du  - \gamma I(t)
+    \label{eq:base_renewal}
+\end{equation}
+where we assume $P_0(t) = 0$.
+
+The function $h(t) = \beta \int_{0}^{t} \lambda I(u) e^{-\nu(t - u)} du$ is the per capita FOI at time $t$.  The FOI $h(t)$ is a rate with units time\textsuperscript{-1}. As such, $h(t)$ defines the FOI felt by an individual at a given moment after accounting for the time-dependent accumulation and decay of all pathogens previously deposited by infected hosts. Importantly, $h(t)$ lets deposition rate ($\lambda$) and contact formation and acquisition of the pathogen (both encapsulated in $\beta$) vary independently, and allows for a continuum between direct contact (when $u \approx t$) and indirect contact (when $u < t$).  However, equation \ref{eq:base_renewal} does not i) clearly separate contact formation and pathogen acquisition, ii) explicitly account for contact duration, or iii) account for directional differences in transmission risk due to the order of when individuals visit locations.  We extended equation \ref{eq:base_renewal} to consider directional interactions occurring at the individual level.
+
+\subsection*{A pairwise view of the force of infection (FOI)}
+
+Consider a single individual $i$ moving through space.   At each moment, the individual experiences a FOI dependent upon the full history of infected individuals that previously or presently share its current location.  Let $I(u, x)$ be the number of infected hosts in location $x$ at time $u$.  If there are $N - 1$ other hosts in the population, we can write $I(u, x) = \sum_{j = 1}^{N - 1} \delta_{x_j(u)}(x) \delta_{I_j(u)}(I)$. The function $\delta_{x_j(u)}(x)$ is an indicator function that is defined as 
+
+\begin{equation*}
+    \delta_{x_j(u)}(x) = 
+    \begin{cases}
+        1 &  \text{if the location of host $j$ at time $u$ is $x$ (i.e., $x_j(u) = x$)} \\
+        0 & \text{otherwise}
+    \end{cases}
+\end{equation*}
+Similarly, $\delta_{I_j(u)}(I)$ is the indicator function 
+
+\begin{equation*}
+    \delta_{I_j(u)}(I) = 
+    \begin{cases}
+        1 &  \text{if host $j$ is infected at time $u$ (i.e., $I_j(u) = I$)} \\
+        0 & \text{otherwise}
+    \end{cases}
+\end{equation*}
+Taken together, this means that host $j$ at past time $u$ only gets ``counted'' toward the FOI experienced by focal host $i$ at time $t$ if they are infected and shedding pathogen ($I_j(u) = I$) at time $u$ and in the same location $x$ ($x_j(u) = x$).
+
+We can then update $h(t)$ to consider the contributions from other individual hosts to the FOI felt by a focal host $i$ at time $t$ in location $x$.
+
+\begin{equation}
+    \begin{aligned}
+    h_i(t, x) &= \beta' \int_{0}^{t} \sum_{j = 1}^{N - 1} \lambda \delta_{x_j(u)}(x) \delta_{I_j(u)}(I) e^{-\nu(t - u)} du \\ &=  \underbrace{\sum_{j = 1}^{N - 1}}_{\text{Sum over individuals}} \int_{0}^{t} \underbrace{\beta'}_{\text{Acquisition}} \underbrace{\delta_{x_j(u)}(x)}_{\text{Contact}} \underbrace{\lambda \delta_{I_j(u)}(I)}_{\text{Deposition}} \underbrace{e^{-\nu(t - u)}}_{\text{Pathogen decay}} du
+    \end{aligned}
+    \label{eq:h_partitioned}
+\end{equation}
+where $\beta'$ is now an acquisition rate (i.e., an uptake rate times per pathogen probability of infection) as we have conditioned on contact with the term $\delta_{x_j(u)}(x)$.  Consider a single term in the summation, $h_{i \leftarrow j}(t, x) = \int_{0}^{t} \beta' \delta_{x_j(u)}(x) \lambda \delta_{I_j(u)}(I) e^{-\nu(t - u)} du$. We can define this term as: the FOI felt by individual $i \neq j$ at time $t$ in location $x$ due to individual $j$'s previous infection history in location $x$, up to time $t$. This quantity is a rate with units time$^{-1}$ and encapsulates pathogen acquisition, contact formation, pathogen deposition, and direct and indirect transmission. Contact duration is explicitly accounted for by the integral over $\delta_{x_j(u)}(x)$, which specifies how long host $i$ is in contact with host $j$ in the past (indirect) or present (direct). Finally, we can more explicitly account for the area of location $x$ by re-writing $\beta' \delta_{x_j(u)}(x)$ as $\tilde{\beta} \Phi(x_j(u), x)$ \citep{Gurarie2013,Martinez-Garcia2020}, where $\tilde{\beta}$ has units $\frac{\text{area units}}{\text{time}}$ (e.g., $\frac{m^2}{\text{hour}}$).  The function $\Phi(x_j(u), x)$ is the contact function and is a probability density function that integrates to one over the spatial domain of interest with units $1 / \text{area units}$ \citep[Appendix S1;][]{Gurarie2013}.
+
 \section*{Appendix A: PMoveSTIR in continuous space}
 
 In the main text, we derive PMoveSTIR assuming that hosts are moving and contacting each other within some area $A_x$, which we can conceptually think about as a grid cell on a gridded landscape.  While this conceptually simplifies the problem, it is more general to consider the case of continuous space where we define contact as potentially happening when present or past host $j$ is (was) within some distance $r$ of host $i$ at its present location \citep{Wilber2022}.  The output we want from this alternative version of PMoveSTIR is the function $\hat{h^*}(x, t)$, which is the force of infection \emph{per unit area} at point $x$ on the landscape (e.g., $\hat{h^*}(x, t)$ might have units day$^{-1}\text{m}^{-2}$).  Integrating this function over different areas will yield estimates of force of infection felt by host $i$ from host $j$ for any area of interest on the landscape.
@@ -312,8 +385,8 @@ We then sum $\frac{d p_{i, S}(t)}{dt}$, $\frac{d p_{i, I}(t)}{dt}$, and $\frac{d
 \begin{equation}
     \begin{aligned}
         \frac{d S(t)}{dt} &= -\frac{\hat{\beta}}{A_{tot}} \left[1 + (1 - \frac{A_x}{A_{tot}}) n \rho \right] [S(t)I(t) - \sum_{i \in N} p_{i, I}(t) p_{i, S}(t)] \\
-        \frac{d I(t)}{dt} &= \frac{\hat{\beta}}{A_{tot}} \left[1 + (1 - \frac{A_x}{A_{tot}}) n \rho \right] [S(t)I(t) - \sum_{i \in N} p_{i, I}(t) p_{i, S}(t)] - \gamma p_{i, I}(t) \\
-        \frac{d R(t)}{dt} &= \gamma p_{i, I}(t).
+        \frac{d I(t)}{dt} &= \frac{\hat{\beta}}{A_{tot}} \left[1 + (1 - \frac{A_x}{A_{tot}}) n \rho \right] [S(t)I(t) - \sum_{i \in N} p_{i, I}(t) p_{i, S}(t)] - \gamma I(t) \\
+        \frac{d R(t)}{dt} &= \gamma I(t).
     \end{aligned}
     \label{eq:sir_population_full}
 \end{equation}

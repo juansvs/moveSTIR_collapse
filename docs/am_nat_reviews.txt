@@ -92,7 +92,9 @@ Major issues (in order of appearance, apart from the first)
   d.    Lines 157-168: this text has no apparent purpose in the methods. Consider moving it to a more appropriate section or removing it
   e.    Lines 310-318: this paragraph might fit better in the discussion. Please also refer to Figures/equations that support your statements, and briefly describe what "temporal reshuffling methods" are.
 
-3.      Description of PMoveSTIR: I found it hard to understand what exactly differentiates MoveSTIR from PMoveSTIR and what special (simpler) cases of PMoveSTIR you considered. I would have found it useful if the "Model development …" section was split into three parts describing in order: MoveSTIR, the general case of PMoveSTIR, the special cases of PMoveSTIR (at the very least, for each special case list assumptions and equation).
+3.      Description of PMoveSTIR: I found it hard to understand what exactly differentiates MoveSTIR from PMoveSTIR and what special (simpler) cases of PMoveSTIR you considered. I would have found it useful if the "Model development …" section was split into three parts describing in order: MoveSTIR, the general case of PMoveSTIR, the special cases of PMoveSTIR (at the very least, for each special case list assumptions and equation). 
+
+- [Trying to do this better]
 
 4.      Description of simulated movement data (lines 169-180): Please explicitly describe each step defining concepts and parameters
   a.    What is the meaning of replicate in "replicate movement tracks"?
@@ -187,7 +189,7 @@ Minor issues (in order of appearance)
 28.     SI lines 127: what about the case where pi > 1?
 29.     SI lines 134-144: repetition from main text
 30.     SI line 148: if you replace A_tot/A_x with n, why not also replace A_x/A_tot with 1/n?
-31.     Equation S17: forgot to replace p_{i, I} with I
+31.     Equation S17: forgot to replace p_{i, I} with I [Fixed]
 
 Figures
 1.      Captions: please describe the figures/panels. Interpretations of what is seen in figures should go in the results section
