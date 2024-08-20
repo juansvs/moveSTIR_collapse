@@ -1,0 +1,211 @@
+MS 62229
+
+To the authors:
+
+The Editorial Board of the American Naturalist has reached a decision regarding your article, "Correlated host movements can reshape spatio-temporal disease dynamics: modeling the contributions of space use to transmission risk using movement data." Your manuscript has been evaluated by myself and by Associate Editor Dr. Éva Kisdi, who has obtained expert reviewer assessment. After reading the manuscript, the reviews, and Dr. Kisdi’s comments, I find myself in agreement with the Associate Editor's recommendation that your paper be declined.
+ 
+As you will see below, we all appreciate the importance of the question you study, and appreciate the explicit and flexible spatial model of transmission either by direct contact or through shedding of an infectious agent. The two expert reviewers we consulted had fairly divergent opinions as you’ll see, and Dr. Kisdi herself gave the paper a thorough read, supplying what amounts to a third review in addition to editorial comments. Lastly, I also read your paper carefully (as this is adjacent to my area of expertise as well). In the end, I agree with Dr. Kisdi we should decline the paper. This is not a comment on the research program necessarily, but at the end, the specific results in this paper seem somewhat contrived.
+
+I’ll give my own view of the issues, hoping that it will help to explain this decision: my first question was, as Reviewer 2 also wondered, what the exact relation between moveSTIM and pmoveSTIM was. Going back to the moveSTIM paper, the conceptual difference escapes me: I can appreciate that the original moveSTIM is based on the transmission kernels whereas here you are using probabilities of using the same space, but in the end both describe the same process and in fact, this correspondence is explicit in the SI of the moveSTIM paper. Overall, it is not very clear what the conceptual advance here is, rather than expressing the same model with a somewhat different formalism.
+
+- We can be more explicit about this.  The link to the UDs is the key piece of novelty
+
+Coming to the content and new results here, the main result here (as highlighted in the abstract, for example) is that correlation in space use increases transmission risk, and even weak correlation can have a dramatic effect. I have to say that I find the first part of this is trivially true: clearly correlation in space use (which by definition means more and closer contact) increases transmission risk based on contact or shedding. 
+
+- OK, sure but the fact that everyone ignores this seems worth pointing out.   
+
+More generally, correlation in this formalism just means direct contact (being in the same “place” as defined by a grid or patch, etc.), and I think this gets lost a bit.
+
+- Not actually direct contact, but OK.  Indirect contact as well.
+
+The second part of the above statement is not trivial at all, but I agree with Dr. Kisdi and reviewer 2 that it is essentially a modeling artifact. Dr. Kisdi’s explanation of this is especially clear: you cannot just take n->infinity in eqs 9 while keeping rho constant. Physically, if you make the grid cells smaller and smaller, rho has to decline, because you are requiring the hosts to be in the same smaller and smaller space. In fact, rho has to go to zero for finite size of A_x equal to the host size (as no two hosts can ever be in the same grid smaller than their size simultaneously). So, you can’t treat rho as constant in equations 9 while changing A_x. And how rho changes (should generally decline with A_x, at least for small enough A_x) determines the effect of this term, so I don’t think Figure 3 is really that meaningful.
+
+- Fair, an I don't disagree that rho should scale, but I think this misses a few key points.  It is the relative size of the area we are concerned about. So N -> infinity with A_x going to 0 or A_T getting large.  Or both doing something.  As A_T gets larger you don't run into this problem of two hosts having to be in the exact same area. Moreover, this limit is logical even if it is biologically not true.  If a host is shedding a finite amount of pathogen in an infinitely small area then of course the FOI goes to infinity (probability of infection is 1).  This really has nothing to do with the correlation term and is a result of Beta.  Beta / A_x.  Yes, in reality you would never get to this infinitely small area, but it doesn't mean the limit doesn't exist. 
+
+- Second, if this was reframed as a surface rather then as curves, that might make the point that we don't exactly know where biological systems are in this space, but if they are occupying a space with low rho small, FOI could still be really important even with small rho.  We are not making any claims about how rho scales.  I get that this was confusing in the paper.  This is an important.  In some sense, it is irrelevant how rho scales and is going to depend on a hole complex set of phenomenon.  But for a given scale of contact, even small rho can be important (white-tailed deer...we saw an average of rho = .13 on the empirical landscape, for example)
+
+- Clearly, this result is not a model artifact because we also see it in our empirical data.  Including the correlation surface
+
+For these two main reasons, I think we should decline this paper. I do want to say that I appreciate the program here, and I think future papers along these lines (perhaps addressing some of the above issues) might well be at home in Am Nat, but these would also be fundamentally different papers with a different message.
+
+Because of space limitations, we can accept only 20% of submissions. We must emphasize the goals of The American Naturalist: to publish papers that are of broad interest to the readership, to pose a new and significant problem or introduce a novel subject to the readership, to develop conceptual unification, and to change the way people think about the topic of the manuscript. Unfortunately, this means that we must decline many good manuscripts that are worthy of scientific publication. Although I am sure you will find this disappointing, I hope that the review and editorial comments at least provide you with feedback that is useful as you consider the next steps for this paper.
+ 
+Declined manuscripts are not eligible for resubmission in a revised form. Thank you for thinking of The American Naturalist as an outlet for your work, and best wishes for your future research.
+ 
+Sincerely,
+ 
+Erol Akçay
+Editor
+The American Naturalist
+Associate Professor, Department of Biology, University of University of Pennsylvania
+
+
+xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+
+Associate Editor Dr. Éva Kisdi's Recommendation
+
+The subject of this ms is both important and interesting. For diseases to spread, individuals must be at the same place at the same time; hence correlated movements must significantly affect disease dynamics. At first glance, I shared the enthusiasm of Reviewer 1.
+
+Upon detailed scrutiny, however, I have found several problems. #2-3 below could be solved by leaving out the population model and focusing on the pairwise force of infection (but then the ms would ignore part of the link between movement and disease dynamics). The many remarks in Review 2 and #4-5 below would require substantial revisions. I think #1 below will be hard to solve and so may be the first remark of Review 2 (as said below, I don't understand the movement model and its discretisation sufficiently well to judge).
+
+1. The authors assume that rho (a parameter poorly described as "the pairwise correlation between i and j at location x") is constant with respect to transmission distance (=grid cell size). This parameter is inserted into the unnumbered equation after line 274 without derivation; but its derivation from the movement model would be the real achievement of linking movement to transmission. If rho were indeed constant, then the pairwise force of infection would become infinite as the transmission distance goes to zero and therefore n goes to infinity (this the authors explicitly state on page 14). But the model assumes that the force of infection is proportional to the amount of ingested pathogens. Even if a susceptible ingests all pathogens that an infected sheds, the pairwise force of infection remains finite. This indicates that rho cannot be constant and must go to zero as the transmission distance (=grid cell size) goes to zero.
+
+- Again, the limit exists, but it does not mean it is biologically realistic.  If have a finite amount of pathogen it makes logical sense that FOI goes to infinity even without correlation as A_x goes to zero. Of 
+
+2. In scaling up the pairwise model to the population level, it is unclear how the pairwise correlation rho applies simultaneously to a large number of partners. On p. 9 of the supplement, the authors simply factor rho out as a constant when they sum up for all infected (sum for j in N sub -i). Because the movement model is not properly described (see below), I am not sure whether individuals tend to move in pairs or in larger groups. But it is surely unrealistic to assume that for a focal susceptible, the same spatial correlation rho applies towards each infected member of a large population.
+
+- There is no movement model needed here.  But we could describe a simple follow the leader model that could be a nice description of what we are seeing.
+
+3. The scaling up is incorrect also because the authors assume that the probability of individual i to be susceptible is independent of individual j to be infected (eq. S15). This is not the case; if we know that j is infected, then i is less likely to be susceptible (because j, or whoever infected j, may have already infected i). Multiplying p_i,S with p_j,I eventually leads to the sum of products p_i,I times p_i,S in eq. S17. Here p_i,I is the probability that individual i is infected and p_i,S is the probability that the same individual at the same time is susceptible; it obviously can't be both.
+
+- What am I missing here?  It very well can be both.  
+
+4. The mathematical notation in the main text is inconsistent. It also uses conventions without defining them (like writing "i is element of x" in the meaning that individual i is in the grid cell x, but the grid cell is not a set of individuals of which i can be element of; "conditional on s" is used in the meaning "with time lag s" without stating what it means). Complicated formulas are repeated with little happening inbetween. From the general framework, the authors quickly move to extreme cases (spatial homogeneity, fast decaying pathogens). Eq. 1 includes an indicator variable for individual j being infected but lacks the spatial location of this individual; the latter appears but the former disappears in eq 2, which is supposed to be a rewrite of eq.1.
+
+5. Details are often seriously unclear. Reviewer 2 gives a long and careful list of unclear points. A few to highlight: The simulation methods are entirely inaccessible for non-specialist readers and lack technical data for specialists. I do not understand why 'spurious' correlations are removed (p. 10); does it matter for transmission whether the individuals are together due to some sort of social interaction or simply by luck? The procedure outlined in Figure 2 is unclear: time is continuous, so the "vector" of locations would have uncountably many elements; but correlations are between two individuals, so what are the many columns. In Figure 4, which contains some of the main results, the legend contradicts the axis titles, so that it is unclear what the panels show.
+
+xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+
+Reviewer #1:
+
+This is a topic of great applied interest and one where theory is not entirely resolved. Spatial overlap of the stationary distributions give an incomplete picture of actual encounters, whereas, in practice, they are often used as a sole proxy for encounters (and typically the most appropriate overlap measure is not used either, which you might mention). The final results here detail the contributions from spatial overlap and correlation of presence in a very nice way. This work has both theoretical and applied merit. I applaud the authors for their continued, positive contributions on this topic.
+
+xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+
+Reviewer #2:
+
+Summary
+The authors develop a modelling framework (PMoveSTIR) to characterise spatio-temporal transmission risks between pairs of animals with known movement trajectories. This framework allows to distinguish the transmission risk contribution from home range overlap and from movement correlation. The authors apply this framework to simulated and empirical movement data.
+
+The authors show analytically how movement correlation between pairs of animals is related to transmission risk. This framework is scaled up to the population level only in the case where space use is uniform and time stationary, thereby limiting the applicability of this method. The simulated and empirical data is not described in sufficient detail to appreciate the modelling results presented by the authors. The sensitivity analyses were not performed for all parameters, and for both simulated and empirical data. The discussion of limitations needs to be more comprehensive, especially regarding modelling assumptions, influence of the characteristics of movement data on transmission risk estimates, and scaling up the model to population level. The manuscript would benefit from some restructuring (e.g. moving some content between the introduction/methods/results/discussion/appendix sections) and a more consistent notation.
+
+The topic of this study is very interesting and timely with an elegant analytical framework. However, this framework is based on the assumption that the area an infected host contaminates depends on the level of spatial discretisation used for movement data, whereas these two quantities should not be tied. This assumption underpins all the results presented in this study.
+
+
+Major issues (in order of appearance, apart from the first)
+1.      Many of the results presented in this study describe the relation between the level of spatial discretisation and transmission risk. However, the spatial granularity at which movement is considered, should not influence transmission risk. It is rather the assumption on the area that infected individuals contaminate that influences transmission risk. The authors make the assumption that the area of contamination corresponds to discrete spatial cells and thus scales with the level of spatial discretisation.
+
+2.      Some of the text should go in a different section
+  a.    Last paragraph of introduction: some content should go in the discussion (e.g. sentence at lines 82-85)
+  b.    2nd paragraph methods, sentence at lines 106-108: second half of sentence should be mentioned when scaling up the model to population level
+  c.    Lines 126-128: please elaborate on this statement and consider moving to discussion
+  d.    Lines 157-168: this text has no apparent purpose in the methods. Consider moving it to a more appropriate section or removing it
+  e.    Lines 310-318: this paragraph might fit better in the discussion. Please also refer to Figures/equations that support your statements, and briefly describe what "temporal reshuffling methods" are.
+
+3.      Description of PMoveSTIR: I found it hard to understand what exactly differentiates MoveSTIR from PMoveSTIR and what special (simpler) cases of PMoveSTIR you considered. I would have found it useful if the "Model development …" section was split into three parts describing in order: MoveSTIR, the general case of PMoveSTIR, the special cases of PMoveSTIR (at the very least, for each special case list assumptions and equation). 
+
+- [Trying to do this better]
+
+4.      Description of simulated movement data (lines 169-180): Please explicitly describe each step defining concepts and parameters
+  a.    What is the meaning of replicate in "replicate movement tracks"?
+  b.    What is meant by "movement tracks"? Is a track the same thing as a trajectory?
+  c.    "combination of parameters": please list parameter values in a table and describe their meaning
+  d.    Do you assume time intervals between random movements to be constant?
+  e.    "established home ranges": did each individual have the same range?
+  f.    To what extent did the centres of home ranges of different individuals overlap?
+  g.    Please describe what a "convolution approach with a social interaction kernel" is.
+  h.    What are "continuous-time movement models" and what is their purpose here?
+  i.    "We estimated the UDs on a grid of square cells": you mention having estimated UDs in the previous sentence, did you mean you discretised UDs across space?
+  j.    What is the overall size of the area? What sizes of grid cells did you consider?
+  k.    Please mention the value of the cell side d in the same table listing the other parameters
+
+5.      Description of method to calculate pairwise FOI from movement trajectories of two individuals (lines 176-199 and 215-226):
+  a.    This method can be applied to simulated and empirical trajectories. Consider moving it to a separate section
+  b.    Mention figure 2
+  c.    Lines 183-185: give a formula for this calculation
+  d.    Line 186 "position history is a binary vector": in Figure 2 it is shown as a matrix and not a vector
+  e.    Line 189: explicitly state what is meant by a "true interaction"
+  f.    Lines 188-193: What is the reasoning behind removing "spurious" cross-correlation due to autocorrelation?
+
+6.      Description of the empirical movement data (lines 204-214): please describe this data in more detail.
+  a.    What area did the deer roam?
+  b.    How many time points did you collect for each deer?
+  c.    What is the spatial resolution of the data?
+
+7.      Modelling results on simulated data:
+  a.    Movement correlation/interaction strength is used intercheangably with home range overlap: please provide a plot of the relationship between these two quantities
+  b.    FOI depends on space and time - how did you compute the aggregate measures shown in Figure 4? Did you take the average or sum over time and space?
+  c.    Figure 4: It is not clear what is plotted on the y-axes
+  d.    Figure 4: It is not clear what assumption has been made on disease decay
+  e.    Lines 327-333: The interpretation of Figure 4c is not clear. What is plotted on the y-axis? In the text you mention that part of this plot is consistent with "analytical results": are these the results shown in Figure 3?
+  f.    Lines 338-341: the meaning of this paragraph is not clear to me. Are these statements based on any modelling results? If yes, which?
+
+8.      Modelling results on empirical data:
+  a.    What spatial discretisation has been used?
+  b.    I would have appreciated some sensitivity analyses similar to what you have done when using simulated data
+  c.    FOI depends on space and time - how did you compute the aggregate measures shown in Figure 4? Did you take the average or sum over time and space?
+  d.    Lines 348-351: please explain this method and provide a figure in support of this statement
+  e.    Lines 359-361: how did you initialise the SIR model? Did you assume one of the deer was infected at the beginning of the simulation? Or did all deer have the same probability of being infected at the start of the simulation? How long did the simulation run for? How did you compute R_0 from the simulation output? Did you compute R_0 or R_effective? The SIR described in the main (Equation 9) and appendix (Equation S18) both assume that correlation is constant across space, time and pairs of individuals (line 276) - is this also true for the SIR on empirical deer data? The SIR (Equations 9 and S18) is based on the assumption that the population size (N) is "sufficiently large" (line 277) - does a population of 5 deer satisfy this condition?
+  f.    Lines 361-363: "Thus, we would predict more explosive transmission through a network that considers fine-scale space use and correlation compared to one that assumed independent movement". Surely the level of spatial discretisation in a model should not influence real-life transmission dynamics?
+
+9.      Discussion
+  b.    Lines 422-424: you state that a goal of PMoveSTIR is to include "underlying environmental factors". Please specify if this has been done as part of this study or if this is a potential next step in the development of the framework.
+  c.    Lines 422-424: It's not clear to me how the use of "environmental factors" can yield to a "risk landscape independent of geographical location". Is this not a contradiction?
+  d.    Lines 436-439: Does this refer to modelling results from simulated or empirical data? What figure are you referring to?
+  e.    Lines 439-443: You state here not having interpolated movement trajectories. Yet, at lines 211-213 you state having interpolated deer trajectories using CTMMs.
+  f.    Lines 443-445: this sentence should go with the following paragraph
+  g.    Lines 454-456: repetition of what has been stated at lines 368-371
+  h.    Lines 459-460: "ignoring correlated movements can make the task orders of magnitude more difficult for some pathogens". Please be more explicit. Which pathogens are you referring to? Can you quantify the increase in the level of difficulty or describe what is more difficult?
+
+Minor issues (in order of appearance)
+1.      Notation:
+  a.    Some parameters have been used twice to denote different quantities
+    i.  S: pathogen persistence and susceptible individuals
+    ii. N: population size and length of time series
+    iii.        s: lagged time and location
+    iv. rho: correlation and radius of a circle
+  b.    page 4: tau and s are used inconsistently
+  c.    page 7: the expressions of either side of ":=" should be swapped
+
+2.      Line 113: define what a top-hat encounter function is. Location x is not defined as circular.
+3.      Line 117: the assumptions on the pathogen deposition rate lambda should be explicited here.
+  a.    lambda does not depend on the time since infection of host j (mentioned later at line 126)
+  b.    lambda does not depend on the size of the area x (this assumption is never mentioned, and no condition has been mentioned saying that areas x have to be of equal size)
+
+4.      Lines 126-128: please elaborate on this statement.
+5.      Equation 5: lagged correlation has not been defined in the main text
+6.      Lines 152-153: this conclusion can already be drawn from equation 4
+7.      Line 230: Equation S11 is mentioned twice in the results and once in Figure 1. Consider moving it to the main text
+8.      Lines 240-245: I suggest assuming rho to be constant, but not necessarily 1. I.e. keep rho in Equation 7 and the expression on line 245, since this was used to create Figure 3
+9.      Line 246: please elaborate on what you mean by "intuitive bounds"
+10.     Lines 256-258: please elaborate on the statement between parentheses
+11.     Line 265: please repeat here under what assumptions Equation 7 applies
+12.     Equation 9: The expression A_x/A_{tot} can be replaced by the simpler 1/n
+13.     Line 293: Is the meaning of "interaction strength" synonymous to movement correlation? You are implying a causal link (by the use of the verb "led") between correlation and overlap, perhaps you wanted to describe an association (instead using e.g. "was associated to")?
+14.     Lines 297-298: Is this shown in one of the Figures?
+15.     Line 305: Please elaborate on the statement "we only included attraction in the simulation". Why was avoidance excluded? Please also mention ignoring avoidance in the methods section.
+16.     Line 319: possible typo - did authors mean to write "decay time" instead of "decay rate"?
+17.     Lines 319-320: "transmission risk is greater for pathogens that can survive longer in the environment" - none of the panels in Figure 4 correspond to this statement
+18.     Line 325: possible typo - did authors mean to reference Fig 4d?
+19.     Lines 345-346: "we estimated significantly higher values" - does this mean you performed a significance test?
+20.     Lines 400-401: should mention assumption that transmission is direct
+21.     SI line 109: what are "common movement models"?
+22.     SI line 112: are you assuming the two patches have the same size?
+23.     SI line 117: are you assuming the same pathogen survival function as on page 12 of the main text?
+24.     SI line 119: specify that this formula applies for all s in [0, eta]
+25.     SI line 119: please reference the equation you used to derive Equation S14
+26.     SI lines 124-127: you already describe the case pi < 1 on SI lines 120-122
+27.     SI lines 125-126: "the relative contribution […] will approach unity" - this is based on the assumption that A_x/A_tot = 1/2, right?
+28.     SI lines 127: what about the case where pi > 1?
+29.     SI lines 134-144: repetition from main text
+30.     SI line 148: if you replace A_tot/A_x with n, why not also replace A_x/A_tot with 1/n?
+31.     Equation S17: forgot to replace p_{i, I} with I [Fixed]
+
+Figures
+1.      Captions: please describe the figures/panels. Interpretations of what is seen in figures should go in the results section
+2.      Figures showing FOI: FOI depends on space and time - how did you compute the aggregate measures shown in Figure 4? Did you take the average or sum over time and space?
+3.      Figure 2:
+  a.    Please show FOI with and without the inclusion of correlation
+  b.    This figure shows an example of two individuals with high movement correlation (and high home range overlap). Could you please create a similar figure for a pair of individuals with low movement correlation and low home range overlap?
+4.      Figures 4:
+  a.    Please list or refer to the parameter values used to simulate and analyse this data
+  b.    please define what is meant by "FOI ratio"
+  c.    please define what is meant by "Relative FOI"
+  d.    are you assuming disease is transmitted directly or indirectly?
+  e.    Figure 4a: what do the dots and boxplots represent?
+5.      Figure 5:
+  a.    please define "FOI ratio"
+  b.    please define "Relative R_0"
+6.      Figure S1:
+  a.    How was this figure produced?
+  b.    What "position histories" have been used?
