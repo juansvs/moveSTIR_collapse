@@ -34,7 +34,7 @@ sapply(1:2, \(i) lines(A$x[1:500,i],A$y[1:500,i], col = hcl.colors(2, palette = 
 
 #### UDs and products ####
 # get the utilization distributions of both individuals
-uds <- getUDs(A)
+uds <- getUDs(A, dr = 1)
 
 # Plot UDs together
 pdf("../docs/figures/example_UDs_overlay.pdf", width = 3, height = 3)
@@ -53,7 +53,7 @@ dev.off()
 # Get the product of the UDs, p_i(x) and p_j(x), as well as the product of their
 # standard deviations sqrt(p_i(x)(1-p_i(x)))*sqrt(p_j(x)(1-p_j(x)))
 prods <- getUDprod(uds)
-# Plot
+
 zrng <- range(unlist(lapply(prods,lapply,cellStats,range)))
 # pdf("../docs/figures/example_UDprod.pdf", width = 4, height = 3,family = "sans")
 par(mar = c(0.5,0.5,0.5,4))
@@ -262,7 +262,7 @@ outdf %>% group_by(sim,nu) %>% slice_head(n=1) %>%
   geom_point()+
   scale_color_discrete(type=hcl.colors(4, "BluGrn", rev=T))+
   theme_classic(base_size = 12)+
-  labs(x = "Decay time (days)", y = expression(paste(Delta," FOI")), color = "Interaction")+
+  labs(x = "Mean decay time (days)", y = expression(paste(Delta," FOI")), color = "Interaction")+
   theme(legend.position = c(0.9,0.2))
  
 # Yet another way, boxplot with diff color for with and without (as in a.). This
