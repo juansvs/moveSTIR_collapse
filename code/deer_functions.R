@@ -20,11 +20,10 @@ getPositions <- function(X,R) {
 # correlation from a->b, from b->a, and the proportion of "significant"
 # correlations within the cell, assessed by confidence intervals. There is an
 # option to prewhiten, or to estimate CI using bootstrapping
-pairCorrs <- function(X, prewt = TRUE, fltr = NULL, export = F, niter = 20) {
+pairCorrs <- function(X, prewt = TRUE, fltr = NULL, export = F) {
   pos1 <- X[[1]]
   pos2 <- X[[2]]
   ovlpcells <- unique(pos1)[unique(pos1) %in% unique(pos2)]
-  sigcells <- numeric(length = length(ovlpcells))
   if(length(ovlpcells)==0) {
     cat("\nThere are no overlap cells")
     NA
@@ -62,7 +61,7 @@ pairCorrs <- function(X, prewt = TRUE, fltr = NULL, export = F, niter = 20) {
     }
     dimnames(cormat_ab) <- dimnames(cormat_ba) <- list(lag = 0:maxlag, cell = ovlpcells)
     dimnames(nvisits) <- list(cell = ovlpcells,NULL)
-    dimnames(siglags) <- ovlpcells
+    # dimnames(nsiglags) <- list(cell=ovlpcells)
     # Export
     if(export) {
       write.csv(cormat_ab, paste0("outputs/correlations_10min_",ids[ind1],"-",ids[ind2],"_",format(Sys.Date(), "%m%d"), ".csv"))
@@ -72,7 +71,15 @@ pairCorrs <- function(X, prewt = TRUE, fltr = NULL, export = F, niter = 20) {
   }
 }
 
-
+#' Interpolate trajectories
+#' 
+#' @description
+#' Interpolate trajectories using a constant time interval.
+#' 
+#' @param x,y telemetries objects describing the two trajectories
+#' @param lag character of the requested time interval. Default is 10 min. Should follow a format that can be interpreted by `seq`
+#' 
+#' @returns a list with two objects, the two interpolated trajectories (telemtries objects)
 interpTrajs <- function(x,y, lag = "10 min") {
   tr1 <- range(x$timestamp)
   tr2 <- range(y$timestamp)
@@ -89,6 +96,24 @@ interpTrajs <- function(x,y, lag = "10 min") {
     interp_traj_2 <- predict(telemetries[[ind2]], FITS[[ind2]], t = tseq)
     list(interp_traj_1,interp_traj_2)
   }
+}
+
+#' Calculate R_0
+#' 
+#' @description
+#' Calculate R_0 from the FOI pairwise matrix.
+#' 
+#' @param X numeric matrix. pairwise FOI matrix
+#' @param g numeric. gamma parameter representing the recovery rate (units should match the units in FOI, usually 1/s)
+#' 
+#' @returns a list with the R matrix, the R0 value, the FOI matrix and the gamma diagonal matrix.
+calcR0 <- function(X, g) {
+  n <- nrow(X)
+  U <- diag(-g, nrow = n)
+  invU <- solve(-U)
+  R <- X%*%invU
+  R0 <- max(abs(eigen(R)$values))
+  return(list(R = R, R0 = R0, Fmat = X, U = U))
 }
 
 # corboot <- function(AB, cors, n = 1000) {

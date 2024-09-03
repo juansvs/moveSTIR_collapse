@@ -1,0 +1,9 @@
+Dear American Naturalist,
+
+We are excited to submit our manuscript entitled "Correlated host movements can reshape spatio-temporal disease dynamics: modeling the contributions of space use to transmission risk using movement data", for consideration as a Major Article at The American Naturalist. In this work, we develop and empirically apply new theory to understand how temporal correlation in space use among hosts can affect spatio-temporal disease dynamics. In contrast to the vast majority of epidemiological models that assume independent host movement, we show that even weak correlations in host movements can significantly alter spatio-temporal transmission risk.  We provide detailed explanations of the mathematical framework, derive analytical results, and apply our theory to understand spatio-temporal infection risk in real-world data. A key strength of our study is that we develop broadly generalizable theoretical results that can also be applied to empirical movement data -- data that are being increasingly collected across wildlife systems. 
+
+We believe that our work is an excellent fit for The American Naturalist because i) it bridges biological scales from individual-level movements to population-level disease dynamics and ii) it provides generalizable theory and methods that can be applied across host-parasite systems to predict and understand transmission risk on real-world landscapes. We believe our work meets The American Naturalist's goal of challenging they way scientists think about topics. In particular, our work challenges the conventional assumptions of many standard epidemiological models and will help theoreticians and empiricists untangle the mechanisms driving the fine-scale heterogeneity in transmission risk that has been observed on real-world landscapes.
+
+Sincerely,
+
+Juan Vargas Soto and Mark Wilber
