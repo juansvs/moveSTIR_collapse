@@ -26,9 +26,13 @@ UDout <- foreach(i = seq_along(trajs), .packages = c("move","ctmm")) %:% foreach
 }
 
 UDout<-unlist(UDout,recursive=FALSE)
-
-out <- foreach(i = seq_along(UDout), .packages = c("move", "ctmm")) %:% 
-  foreach(nu = nus, .combine = 'rbind', .inorder = FALSE) %dopar% {
+# saveRDS(UDout, "outputs/231123_sims_trajs_UDs.rds")
+# out <- foreach(i = seq_along(UDout), .packages = c("move", "ctmm")) %:% 
+  # foreach(nu = nus, .combine = 'rbind', .inorder = FALSE) %dopar% {
+outname <- 
+file(outname,open = "wt")
+for(i in seq_along(UDout)) {
+  for(nu in nus) {
     A <- UDout[[i]]$TRAJS
     UDS <- UDout[[i]]$UDS
     SIM <- UDout[[i]]$SIM
@@ -39,7 +43,7 @@ out <- foreach(i = seq_along(UDout), .packages = c("move", "ctmm")) %:%
     totareai <- summary(UDS[[2]][[1]])$CI[2]
     totareaj <- summary(UDS[[2]][[2]])$CI[2]
     
-    c(SIM,
+    cat(SIM,
       nu, 
       cellarea,
       totareai,
@@ -47,12 +51,15 @@ out <- foreach(i = seq_along(UDout), .packages = c("move", "ctmm")) %:%
       cellStats(fois[[1]][[3]], sum), 
       cellStats(fois[[1]][[1]],sum), 
       cellStats(fois[[1]][[2]],sum), 
-      overlap(UDS[[2]])$CI[,,2][1,2])
-    
+      overlap(UDS[[2]])$CI[,,2][1,2], "\n",file = "231124_sims_out.txt", append = T, sep = ",")
   }
-stopCluster(cl)
-outdf <- as.data.frame(do.call(rbind,out))
-names(outdf) <- c("sim", "nu", "Ax","Atoti","Atotj", "foi_ud", "foi_full1", "foi_full2", "overlap")
-outdf$social <- rep(social, each = length(nus)*length(gridres))
-outname <- paste0("outputs/sim_res_", format(Sys.time(), "%y%m%d"), ".csv")
-write.csv(outdf,outname, quote = F, row.names = F)
+}
+file(outname)
+
+#   }
+# stopCluster(cl)
+# outdf <- as.data.frame(do.call(rbind,out))
+# names(outdf) <- c("sim", "nu", "Ax","Atoti","Atotj", "foi_ud", "foi_full1", "foi_full2", "overlap")
+# outdf$social <- rep(social, each = length(nus)*length(gridres))
+# outname <- paste0("outputs/sim_res_", format(Sys.time(), "%y%m%d"), ".csv")
+# write.csv(outdf,outname, quote = F, row.names = F)
