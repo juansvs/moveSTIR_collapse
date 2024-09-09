@@ -55,7 +55,7 @@ simulate_tracks <- function(tau = 10, g = 1e3, steps = 500, dp = 0.2, social = N
 
 # Function to get the utilization distributions. Output is a list, first element
 # are the ctmm fits, second are the individual UDs
-getUDs <- function(X, res = 10, ctmm = TRUE) {
+getUDs <- function(X, dr = 10, ctmm = TRUE) {
   xs <- X[[1]]
   ys <- X[[2]]
   nind <- ncol(xs)
@@ -69,7 +69,7 @@ getUDs <- function(X, res = 10, ctmm = TRUE) {
     GUESS <- lapply(telemetries, \(x) ctmm.guess(x, interactive = F))
     FITS <- lapply(seq_along(telemetries), \(x) ctmm.select(telemetries[[x]], GUESS[[x]]))
     # AKDE
-    UDS <- akde(telemetries, FITS, res = res)
+    UDS <- akde(telemetries, FITS, grid = list(dr = c(dr,dr)))
     return(list(FITS, UDS, method = "AKDE"))
   } else {
     # Create SpatialPoints object
