@@ -247,11 +247,14 @@ for (i in 1:ncol(combs)) {
       lags <- (as.numeric(row.names(cors[[j]]))-1)*600
       # lags <- as.numeric(row.names(corrs))
       dtau <- unique(diff(lags))
+      # weight correlation by survival function, and integrate (sum) across lags
       corrintSARS <- colSums(exp(-nus[1]*lags)*cors[[j]]*dtau)
       corrintCWD <- colSums(exp(-nus[2]*lags)*cors[[j]]*dtau)
+      # create output rasters for integrated corr term, set values to 0
       corrastCWD <- corrastSARS <- udprod
       values(corrastCWD) <- values(corrastSARS) <- 0
       # corcells <- as.numeric(substring(names(corrs),2))
+      # substitute the value in cells with correlation values (those that both visited)
       corcells <- as.numeric(dimnames(cors[[j]])$cell)
       corrastCWD[corcells] <- corrintCWD
       corrastSARS[corcells] <- corrintSARS
