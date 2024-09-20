@@ -100,3 +100,51 @@ mtext("d)", 2, line = 1.5, at=1.2,las=1, cex=1.1)
 mtext("Lag",1, outer = T, line = 1, cex=1.3)
 mtext("Correlation",2, outer = T, line = 1, cex=1.3)
 
+#### Simulation results ####
+outdf <- read.csv("outputs/sim_res_240906.csv")
+# Relative FOI w/ vs w/o corr
+p1 <- filter(outdf, nu == 0.5, Ax == 25) %>% ggplot(aes(social, foi_full1/mean(foi_ud),group = social))+
+  # geom_boxplot(outlier.shape = NA, color = "darkred")+
+  geom_jitter(color = "darkred")+
+  # geom_boxplot(aes(y = foi_ud/mean(foi_ud)), color = "steelblue")+
+  geom_jitter(aes(y = foi_ud/mean(foi_ud)), color = "steelblue")+
+  theme_minimal(base_size = 14)+
+  labs(x = "Interaction strength", y = "Relative FOI")+
+  scale_y_log10(labels = scales::label_comma())
+  
+p1
+# FOI ratio vs HR overlap for interaction strength = 0
+p2 <- filter(outdf, social==0, nu == 0.5, Ax==25) %>%
+  ggplot(aes(overlap, ((foi_full1-foi_ud)/foi_ud)))+
+  geom_hline(yintercept = 1,linetype=2)+
+  geom_point()+
+  theme_minimal(base_size = 14)+
+  labs(x = "Home Range Overlap", y = "FOI ratio")
+p2
+
+# FOI ratio vs. decay time
+p4 <- filter(outdf, Ax == max(Ax), .by = sim) %>% 
+  # filter(social %in% c(0,0.7,0.95,1)) %>% 
+  ggplot(aes(1/nu/24,(foi_full2-foi_ud)/foi_ud,color=factor(social)))+
+  geom_hline(yintercept = 1, linetype=2)+
+  geom_point(show.legend = F, position = position_dodge(width = 0.2))+
+  scale_y_log10()+
+  theme_minimal(base_size = 14)+
+  labs(x = "Mean decay time (days)", y = "FOI ratio", color = "Interaction")+  
+  scale_color_discrete(type=hcl.colors(4, "BluGrn", rev=T))
+p4
+
+# FOI ratio vs. relative cell size
+p5 <- filter(outdf, nu==0.125) %>% 
+  # group_by(sim) %>% 
+  mutate(Atoti = max(Atoti), Atotj = max(Atotj), .by = sim) %>% 
+  ggplot(aes(Ax/Atoti/1e4,(foi_full1-foi_ud)/foi_ud, color = factor(social)))+
+  # stat_smooth(method = "lm", se = F)+
+  geom_point(show.legend = F)+
+  theme_minimal(base_size = 14)+
+  labs(x = expression(paste("Relative cell size ",A[x]/A[tot]," (%)")), y = "FOI ratio", color = "Interaction")+
+  scale_color_discrete(type=hcl.colors(4, "BluGrn", rev=T))+
+  # scale_x_continuous(labels = \(x) parse(text=gsub("e", " %*% 10^", scales::scientific_format()(x))))
+  scale_x_continuous(labels = \(x) x*100)
+# theme(legend.text = element_text(size = 10), legend.title = element_text(size=11))
+p5
