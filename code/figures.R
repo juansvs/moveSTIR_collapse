@@ -128,7 +128,7 @@ p4 <- filter(outdf, Ax == max(Ax), .by = sim) %>%
   ggplot(aes(1/nu/24,(foi_full2-foi_ud)/foi_ud,color=factor(social)))+
   geom_hline(yintercept = 1, linetype=2)+
   geom_point(show.legend = F, position = position_dodge(width = 0.2))+
-  scale_y_log10()+
+  scale_y_log10(labels = scales::label_comma())+
   theme_minimal(base_size = 14)+
   labs(x = "Mean decay time (days)", y = "FOI ratio", color = "Interaction")+  
   scale_color_discrete(type=hcl.colors(4, "BluGrn", rev=T))

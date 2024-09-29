@@ -89,18 +89,39 @@ deer_UDs <- akde(telemetries, FITS,grid = list(dr = c(contact_dist,contact_dist)
 # clusterMap(cl, akde, telemetries,FITS, grid = list(dr = c(contact_dist,contact_dist), align.to.origin = T))
 outnames <- paste0("outputs/UD_", names(FITS), ".tif")
 # Export UD PMFs
-mapply(writeRaster,UD,outnames, DF = "PMF", overwrite = TRUE)
+mapply(writeRaster,deer_UDs,outnames, DF = "PMF", overwrite = TRUE)
 # Export 95% home range polygons
 outnames <- paste0("outputs/HRpoly_", names(FITS), ".shp")
-mapply(writeShapefile,UD,outnames)
+mapply(writeShapefile,deer_UDs,outnames)
 hr95 <- lapply(UD, SpatialPolygonsDataFrame.UD)
+
+#### UD prod and SD prod ####
+
+# Possible combinations of individuals
+combs <- combn(length(ids), 2)
 
 #### Correlations ####
 # get names of files with UD grids
 fnames <- paste0("outputs/UD_X", ids, ".tif")
+for (i in seq_len(ncol(combs))) {
+  # read in UDs, two at a time
+  ind1 <- combs[1,i]
+  ind2 <- combs[2,i]
+  
+  r1 <- raster(fnames[ind1]) 
+  r2 <- raster(fnames[ind2])
+  
+  
+  # get UD and SD products
+  prods <- getProds(r1,r2)
+  # cell area
+  Area <- prod(res(r1))
 
-# Possible combinations of individuals
-combs <- combn(length(ids), 2)
+  # export outputs
+  writeRaster(prods$UD, paste0("outputs/UDprod_",ids[ind1],"-",ids[ind2],".tif"), overwrite = T)
+  writeRaster(prods$SD, paste0("outputs/SDprod_",ids[ind1],"-",ids[ind2],".tif"), overwrite = T)
+}
+
 
 # Calculate UD and SD products from UD pair values, the correlations, and
 # corresponding FOIs
@@ -250,6 +271,17 @@ for (i in 1:ncol(combs)) {
       # weight correlation by survival function, and integrate (sum) across lags
       corrintSARS <- colSums(exp(-nus[1]*lags)*cors[[j]]*dtau)
       corrintCWD <- colSums(exp(-nus[2]*lags)*cors[[j]]*dtau)
+      
+      ### Compare corr contribution to UD contribution
+      corcells <- as.numeric(dimnames(cors[[j]])$cell)
+      udvals_sars <- 1/nus[1]*udprod[corcells]
+      udvals_cwd <- (1-exp(-nus[2]*lagt))/nus[2]*udprod[corcells]
+      sdvals <- sdprod[corcells]
+      
+      cell_ratio_sars <- mean(corrintSARS*sdvals/(udvals_sars))
+      cell_ratio_cwd <- mean(corrintCWD*sdvals/(udvals_cwd))
+      ###
+      
       # create output rasters for integrated corr term, set values to 0
       corrastCWD <- corrastSARS <- udprod
       values(corrastCWD) <- values(corrastSARS) <- 0
@@ -258,6 +290,7 @@ for (i in 1:ncol(combs)) {
       corcells <- as.numeric(dimnames(cors[[j]])$cell)
       corrastCWD[corcells] <- corrintCWD
       corrastSARS[corcells] <- corrintSARS
+      # create the FOI rasters 
       foiCWDrast <- beta*lam/Area*(udprod*(1-exp(-nus[2]*lagt))/nus[2]+sdprod*corrastCWD)
       foiSARSrast <- beta*lam/Area*(udprod*1/nus[1]+sdprod*corrastSARS)
       raster::plot(foiSARSrast)
@@ -265,6 +298,7 @@ for (i in 1:ncol(combs)) {
       cat("using UD only for",id1, "and", id2,"\n")
       foiCWDrast <- foiudcwd
       foiSARSrast <- foiudsars
+      cell_ratio_sars <- cell_ratio_cwd <- 0
     }
     foiCWDrast <- max(foiCWDrast,0)
     foiSARSrast <- max(foiSARSrast,0)
@@ -275,14 +309,16 @@ for (i in 1:ncol(combs)) {
                                             cellStats(foiSARSrast, sum),
                                             cellStats(foiudcwd, sum),
                                             cellStats(foiudsars, sum),
-                                            cellStats(foidirect, sum)
+                                            cellStats(foidirect, sum),
+                                            cell_ratio_sars,
+                                            cell_ratio_cwd
                                             )
                            )
   }
 }
 
 names(deer_FOIs_nus_prewt) <- c("ind1", "ind2", "correlation","FOI_CWD","FOI_SARS", 
-                          "FOI_UD_CWD", "FOI_UD_SARS", "FOI_direct")
+                          "FOI_UD_CWD", "FOI_UD_SARS", "FOI_direct", "cell_ratio_SARS", "cell_ratio_CWD")
 deer_FOIs_nus_prewt
 write.csv(deer_FOIs_nus_prewt, "outputs/deer_totFOI_CWDSARS.csv", row.names = F, quote = F)
 

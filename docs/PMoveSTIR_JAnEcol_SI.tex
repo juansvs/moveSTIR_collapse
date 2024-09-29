@@ -404,7 +404,19 @@ Finally, we can recognize that when $N$ is large, typically $S(t)I(t) \gg \sum_{
 \end{equation}
 where $\beta^* = \frac{\hat{\beta}}{A_{tot}}$.
 
-\bibliographystyle{amnat.bst}
+\section*{Appendix F: Simulating correlated movement}
+Here we describe the process followed to simulate trajectories affected by a positive interaction strength between pairs of individuals. The approach is inspired by the convolution method of \citet{Scharf2018}, designed to infer attraction based on observed movement. In our simulation, animals follow a random walk, but their movement is biased towards their home range center. To start, we draw the coordinates of the home range center from a Poisson distribution with parameter $\lambda=dp\gamma$, where $\gamma$ defines the scale of diffusion. Here we take $dp=0.2$ and $\gamma=1000$. Each coordinate is drawn independently, and individuals start the simulation at their home range centers. 
+
+The individual coordinates of each individual are then updated iteratively using the following formula:
+\begin{equation}
+	x_i(t+1)=x_i(t)-\frac{1}{\tau}(x_i(t)-x_{\Omega,i})+\sqrt{\gamma}\epsilon
+\end{equation}
+The term $\sqrt\gamma\epsilon$ defines a diffusive Brownian motion process, where $\epsilon$ is drawn independently from a standard Normal distribution (mean 0, standard deviation of 1) at each step. The $1/\tau$ parameter defines the strength of attraction back to the home range center. 
+We generate two independent trajectories for each simulation by iteratively updating the position of both individuals for a number of steps (500, 1000, 2000, or 5000). 
+We then modify the trajectories to represent interaction between the individuals. 
+
+
+
 \bibliography{references}
 
 \clearpage
