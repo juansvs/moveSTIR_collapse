@@ -230,16 +230,16 @@ To derive equation 5 in the main text that assumes stationarity in utilization d
 
 \begin{equation}
     \begin{aligned}
-        h^*_{i \leftarrow j}(t, x) = \frac{\tilde{\beta}}{A_x} \lambda \int_{-\infty}^{t} [p_i(x, t) p_j(x, u) + Cov(\delta'_{x_i(t)}(x), \delta'_{x_j(u)}(x))] S(t - u) du.
+        h^*_{i \leftarrow j}(t, x) = \frac{\tilde{\beta}}{A_x} \lambda \int_{-\infty}^{t} [p_i(x, t) p_j(x, u) + Cov(\delta'_{x_i(t)}(x), \delta'_{x_j(u)}(x))] \Theta(t - u) du.
     \end{aligned}
     \label{eq:foi_cov}
 \end{equation}
-Here, $p_i(x, t)$ and $p_j(x, u)$ represent the probabilities of host $i$ and $j$ using location $x$ at time $t$ and $u$, respectively. The parameters $\tilde{\beta}$ and $\lambda$ are the acquisition and deposition rates respectively, and $A_x$ is the area of location $x$.  $Cov(\delta'_{x_i(t)}(x), \delta'_{x_j(u)}(x))$ gives the covariance in how host $i$ and $j$ at time $t$ and $u$ are using area $x$.  Finally, $S(t - u)$  gives the survival probability of a pathogen at time $t$ that was deposited at time $u$. 
+Here, $p_i(x, t)$ and $p_j(x, u)$ represent the probabilities of host $i$ and $j$ using location $x$ at time $t$ and $u$, respectively. The parameters $\tilde{\beta}$ and $\lambda$ are the acquisition and deposition rates respectively, and $A_x$ is the area of location $x$.  $Cov(\delta'_{x_i(t)}(x), \delta'_{x_j(u)}(x))$ gives the covariance in how host $i$ and $j$ at time $t$ and $u$ are using area $x$.  Finally, $\theta(t - u)$  gives the survival probability of a pathogen at time $t$ that was deposited at time $u$. 
 
 If we now assume a stationary utilization distribution, the time indexes on $p_i(x, t)$ and $p_j(x, u)$ are irrelevant -- the logic here is that, by definition, the mean of a stationary distribution is independent of time so $p_i(x, t) = p_i(x)$ and $p_j(x, u) = p_j(x)$. Therefore, we can write  
 
 $$
-h^*_{i \leftarrow j}(t, x) = \frac{\tilde{\beta}}{A_x} \lambda \left[p_i(x) p_j(x) \int_0^\infty S(\tau) d\tau  + \int_{-\infty}^t Cov(\delta'_{x_i(t)}(x), \delta'_{x_j(u)}(x)) S(t - u) du\right].
+h^*_{i \leftarrow j}(t, x) = \frac{\tilde{\beta}}{A_x} \lambda \left[p_i(x) p_j(x) \int_0^\infty \theta(\tau) d\tau  + \int_{-\infty}^t Cov(\delta'_{x_i(t)}(x), \delta'_{x_j(u)}(x)) \Theta(t - u) du\right].
 $$
 
 In addition, given stationarity, $h^*_{i \leftarrow j}(t, x)$ does not depend on time, such that 
@@ -252,12 +252,12 @@ Moreover, given stationarity, we know that $Cov(\delta'_{x_i(t)}(x), \delta'_{x_
 
 \begin{equation}
     \begin{aligned}
-   h^*_{i \leftarrow j}(x) = \frac{\tilde{\beta}}{A_x} \lambda \left[p_i(x)p_j(x) \int_0^\infty S(s) d\tau + \int_{0}^{\infty} Cov(\delta_{i \in x}, \delta_{j \in x} | \tau) S(s) ds\right].
+   h^*_{i \leftarrow j}(x) = \frac{\tilde{\beta}}{A_x} \lambda \left[p_i(x)p_j(x) \int_0^\infty \theta(\tau) d\tau + \int_{0}^{\infty} Cov(\delta_{i \in x}, \delta_{j \in x} | \tau) \theta(s) ds\right].
     \end{aligned}
     \label{eq:foi_stationary}
 \end{equation}
 
-By replacing $S(s)$ with the exponential survival function $e^{-\nu s}$ we obtain equation 5 in the main text.
+By replacing $\theta(s)$ with the exponential survival function $e^{-\nu s}$ we obtain equation 5 in the main text.
 
 In the lower left-hand corner of Fig. 1 in the main text, we have the case where space use is uniform and time is stationary. We again assume that pathogen decay is exponentially distributed with a rate of decay $\nu$ such that $S(s) = \exp(-\nu s)$. Given these assumptions, we can write equation \ref{eq:foi_stationary} as
 \begin{equation}
