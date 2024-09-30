@@ -1,4 +1,4 @@
-#### Steps diagram base ####
+#### Steps diagram in base R ####
 x11(width = 9, height = 6, pointsize = 10, bg = "white")
 par(fig = c(0/18,3.5/18,6.25/12, 9.75/12), mar = c(0,0,0,0))
 plot(A$x,A$y,type = 'n',asp=1,xlab = "", ylab = "",xaxt="n", yaxt="n")
@@ -148,3 +148,14 @@ p5 <- filter(outdf, nu==0.125) %>%
   scale_x_continuous(labels = \(x) x*100)
 # theme(legend.text = element_text(size = 10), legend.title = element_text(size=11))
 p5
+
+# FOI ratio vs tracking length
+lendb <- read_csv("outputs/sim_res_trklen_240929.csv")
+p.len <- lendb %>% ggplot(aes(steps,(foi_full1-foi_ud)/foi_ud))+
+  geom_hline(yintercept = 1, linetype =2)+
+  geom_point(aes(color = factor(social)), show.legend = F, position = position_dodge(width = 100))+
+  # scale_y_log10()+
+  scale_color_manual(values = hcl.colors(4,"BluGrn", rev = T))+
+  labs(x = "Tracking time (steps)", y = "FOI ratio")+
+  theme_minimal(base_size = 12)
+p.len
