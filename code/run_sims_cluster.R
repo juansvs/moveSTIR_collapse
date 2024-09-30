@@ -12,7 +12,7 @@ source("code/functions.R")
 clusterEvalQ(cl, source("code/functions.R"))
 
 
-social <- c(0,0.5, 0.7, 0.9,0.93, 0.96, 1)
+social <- c(0,0.7, 0.95,1)
 nus <- 1/(24*c(1/12, 1/3, 1, 3, 7))
 gridres <- c(1, 5, 10)
 iterations <- 20
