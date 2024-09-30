@@ -35,7 +35,7 @@ UDout <- foreach(i = seq_along(trajs_split), .packages = c("move","ctmm")) %dopa
        UDS = getUDs(trajs_split[[i]],dr = gridres))
 }
 
-UDout<-unlist(UDout,recursive=FALSE)
+#UDout<-unlist(UDout,recursive=FALSE)
 
 out <- foreach(i = seq_along(UDout), .packages = c("move", "ctmm"), .combine = 'rbind', .inorder = FALSE) %dopar% {
     A <- UDout[[i]]$TRAJS
@@ -62,7 +62,7 @@ out <- foreach(i = seq_along(UDout), .packages = c("move", "ctmm"), .combine = '
     
   }
 stopCluster(cl)
-outdf <- as.data.frame(do.call(rbind,out))
+outdf <- as.data.frame(out)
 names(outdf) <- c("sim", "steps", "nu", "Ax","Atoti","Atotj", "foi_ud", "foi_full1", "foi_full2", "overlap")
 outdf$social <- rep(social, each = 4*iterations)
 outname <- paste0("outputs/sim_res_trklen_", format(Sys.time(), "%y%m%d"), ".csv")
