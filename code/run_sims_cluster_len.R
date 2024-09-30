@@ -48,6 +48,13 @@ out <- foreach(i = seq_along(UDout), .packages = c("move", "ctmm"), .combine = '
     cellarea <- prod(res(fois[[1]][[1]]))
     totareai <- summary(UDS[[2]][[1]])$CI[2]
     totareaj <- summary(UDS[[2]][[2]])$CI[2]
+    # ratio of FOI at cells visited by both
+    cellsindex <- getValues(fois[[1]]$FAB!=fois[[1]]$FUD)
+    ncells <- sum(cellsindex)
+    ratio1 <- mean((fois[[1]]$FAB[cellsindex]-fois[[1]]$FUD[cellsindex])/fois[[1]]$FUD[cellsindex])
+    ratio2 <- mean((fois[[1]]$FBA[cellsindex]-fois[[1]]$FUD[cellsindex])/fois[[1]]$FUD[cellsindex])
+    ratio1sd <- sd((fois[[1]]$FAB[cellsindex]-fois[[1]]$FUD[cellsindex])/fois[[1]]$FUD[cellsindex])
+    ratio2sd <- sd((fois[[1]]$FBA[cellsindex]-fois[[1]]$FUD[cellsindex])/fois[[1]]$FUD[cellsindex])
     
     c(SIM,
       STEPS,
@@ -56,14 +63,22 @@ out <- foreach(i = seq_along(UDout), .packages = c("move", "ctmm"), .combine = '
       totareai,
       totareaj,
       cellStats(fois[[1]][[3]], sum), 
-      cellStats(fois[[1]][[1]],sum), 
-      cellStats(fois[[1]][[2]],sum), 
-      overlap(UDS[[2]])$CI[,,2][1,2])
+      cellStats(fois[[1]][[1]], sum), 
+      cellStats(fois[[1]][[2]], sum), 
+      overlap(UDS[[2]])$CI[,,2][1,2],
+      ncells,
+      ratio1,
+      ratio2,
+      ratio1sd,
+      ratio2sd
+      )
     
   }
 stopCluster(cl)
 outdf <- as.data.frame(out)
-names(outdf) <- c("sim", "steps", "nu", "Ax","Atoti","Atotj", "foi_ud", "foi_full1", "foi_full2", "overlap")
-outdf$social <- rep(social, each = 4*iterations)
+names(outdf) <- c("sim", "steps", "nu", "Ax","Atoti","Atotj", 
+                  "foi_ud", "foi_full1", "foi_full2", "overlap",
+                  "ncells", "cellratio1","cellratio2","cellratio1sd", "cellratio2sd")
+outdf$social <- rep(rep(social, each=4),iterations)
 outname <- paste0("outputs/sim_res_trklen_", format(Sys.time(), "%y%m%d"), ".csv")
 write.csv(outdf,outname, quote = F, row.names = F)
