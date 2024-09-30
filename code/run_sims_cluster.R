@@ -12,7 +12,7 @@ source("code/functions.R")
 clusterEvalQ(cl, source("code/functions.R"))
 
 
-social <- c(0,0.7, 0.95,1)
+social <- c(0,0.5, 0.7, 0.95, 1)
 nus <- 1/(24*c(1/12, 1/3, 1, 3, 7))
 gridres <- c(1, 5, 10)
 iterations <- 20
@@ -26,13 +26,9 @@ UDout <- foreach(i = seq_along(trajs), .packages = c("move","ctmm")) %:% foreach
 }
 
 UDout<-unlist(UDout,recursive=FALSE)
-# saveRDS(UDout, "outputs/231123_sims_trajs_UDs.rds")
-# out <- foreach(i = seq_along(UDout), .packages = c("move", "ctmm")) %:% 
-  # foreach(nu = nus, .combine = 'rbind', .inorder = FALSE) %dopar% {
-outname <- 
-file(outname,open = "wt")
-for(i in seq_along(UDout)) {
-  for(nu in nus) {
+
+out <- foreach(i = seq_along(UDout), .packages = c("move", "ctmm")) %:% 
+  foreach(nu = nus, .combine = 'rbind', .inorder = FALSE) %dopar% {
     A <- UDout[[i]]$TRAJS
     UDS <- UDout[[i]]$UDS
     SIM <- UDout[[i]]$SIM
@@ -42,8 +38,15 @@ for(i in seq_along(UDout)) {
     cellarea <- prod(res(fois[[1]][[1]]))
     totareai <- summary(UDS[[2]][[1]])$CI[2]
     totareaj <- summary(UDS[[2]][[2]])$CI[2]
+    # ratio of FOI at cells visited by both
+    cellsindex <- getValues(fois[[1]]$FAB!=fois[[1]]$FUD)
+    ncells <- sum(cellsindex)
+    ratio1 <- mean((fois[[1]]$FAB[cellsindex]-fois[[1]]$FUD[cellsindex])/fois[[1]]$FUD[cellsindex])
+    ratio2 <- mean((fois[[1]]$FBA[cellsindex]-fois[[1]]$FUD[cellsindex])/fois[[1]]$FUD[cellsindex])
+    ratio1sd <- sd((fois[[1]]$FAB[cellsindex]-fois[[1]]$FUD[cellsindex])/fois[[1]]$FUD[cellsindex])
+    ratio2sd <- sd((fois[[1]]$FBA[cellsindex]-fois[[1]]$FUD[cellsindex])/fois[[1]]$FUD[cellsindex])
     
-    cat(SIM,
+    c(SIM,
       nu, 
       cellarea,
       totareai,
@@ -51,15 +54,19 @@ for(i in seq_along(UDout)) {
       cellStats(fois[[1]][[3]], sum), 
       cellStats(fois[[1]][[1]],sum), 
       cellStats(fois[[1]][[2]],sum), 
-      overlap(UDS[[2]])$CI[,,2][1,2], "\n",file = "231124_sims_out.txt", append = T, sep = ",")
+      overlap(UDS[[2]])$CI[,,2][1,2],
+      ncells,
+      ratio1,
+      ratio2,
+      ratio1sd,
+      ratio2sd)
+    
   }
-}
-file(outname)
-
-#   }
-# stopCluster(cl)
-# outdf <- as.data.frame(do.call(rbind,out))
-# names(outdf) <- c("sim", "nu", "Ax","Atoti","Atotj", "foi_ud", "foi_full1", "foi_full2", "overlap")
-# outdf$social <- rep(social, each = length(nus)*length(gridres))
-# outname <- paste0("outputs/sim_res_", format(Sys.time(), "%y%m%d"), ".csv")
-# write.csv(outdf,outname, quote = F, row.names = F)
+stopCluster(cl)
+outdf <- as.data.frame(do.call(rbind,out))
+names(outdf) <- c("sim", "nu", "Ax","Atoti","Atotj", 
+                  "foi_ud", "foi_full1", "foi_full2", "overlap",
+                  "ncells", "cellratio1","cellratio2","cellratio1sd", "cellratio2sd")
+outdf$social <- rep(social, each = length(nus)*length(gridres))
+outname <- paste0("outputs/sim_res_", format(Sys.time(), "%y%m%d"), ".csv")
+write.csv(outdf,outname, quote = F, row.names = F)
