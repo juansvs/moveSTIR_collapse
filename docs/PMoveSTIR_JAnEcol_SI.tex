@@ -161,7 +161,7 @@ where $\beta'$ is now an acquisition rate (i.e., an uptake rate times per pathog
 
 In the main text, we derive PMoveSTIR assuming that hosts are moving and contacting each other within some area $A_x$, which we can conceptually think about as a grid cell on a gridded landscape.  While this conceptually simplifies the problem, it is more general to consider the case of continuous space where we define contact as potentially happening when present or past host $j$ is (was) within some distance $r$ of host $i$ at its present location \citep{Wilber2022}.  The output we want from this alternative version of PMoveSTIR is the function $\hat{h^*}(x, t)$, which is the force of infection \emph{per unit area} at point $x$ on the landscape (e.g., $\hat{h^*}(x, t)$ might have units day$^{-1}\text{m}^{-2}$).  Integrating this function over different areas will yield estimates of force of infection felt by host $i$ from host $j$ for any area of interest on the landscape.
 
-Let's start with the situation where a host $i$ is occupying some circular area $A_{x, \rho}$ where $x$ is the center of the area and $\rho$ is the radius of the area.  A contact can occur when host $j$ (past or present) is in the area $A_{x, \rho + r}$ where $r$ is our epidemilogically relevant contact distance and $r >> \rho$.  The force of infection felt by host $i$ from host $j$ as time $t$ in area $A_{x, \rho}$ is given by
+Let's start with the situation where a host $i$ is occupying some circular area $A_{x, \rho}$ where $x$ is the center of the area and $\rho$ is the radius of the area.  A contact can occur when host $j$ (past or present) is in the area $A_{x, \rho + r}$ where $r$ is our epidemiologically relevant contact distance and $r >> \rho$.  The force of infection felt by host $i$ from host $j$ as time $t$ in area $A_{x, \rho}$ is given by
 
 \begin{equation}
     h_{i \leftarrow j}(t, A_{x, \rho}) = \int_{-\infty}^{t} \beta' \lambda \delta'_{x_i(t)}(A_{x, \rho}) \delta'_{x_j(u)}(A_{x, \rho + r}) e^{-\nu(t - u)} du.
@@ -197,7 +197,7 @@ where $p_i(A_{x, \rho}, t)$ is the probability of host $i$ being in area $A_{x, 
 Now we want to calculate $h^*_{i \leftarrow j}(t, A_{x, \rho})$ in the limit as $\rho \rightarrow 0$. For equation \ref{eq:ind_movement}, we can divide both sides by $A_{x, \rho}$ and take the limit as $\rho \rightarrow 0$ (such that $A_{x, \rho} \rightarrow 0$). Doing this we obtain
 
 \begin{equation}
-    \hat{h}^*_{i \leftarrow j}(t, x) = \beta' \lambda \int_{-\infty}^{t} [f_i(x, t) p_j(A_{x, r}, u)] e^{-\nu(t - u)} du = \beta' \lambda \int_{-\infty}^{t} [f_i(x, t) \int_{s \in A_{x, r}} f_j(s, u) ds] e^{-\nu(t - u)} du
+    \hat{h}^*_{i \leftarrow j}(t, x) = \beta' \lambda \int_{-\infty}^{t} [f_i(x, t) p_j(A_{x, r}, u)] e^{-\nu(t - u)} du = \beta' \lambda \int_{-\infty}^{t} [f_i(x, t) \int_{y \in A_{x, r}} f_j(y, u) dy] e^{-\nu(t - u)} du
     \label{eq:limit}
 \end{equation}
 where $f_i(x, t)$ and $f_j(x, t)$ are the probability density functions of space use for host $i$ and host $j$, respectively.  Note that the units on $f_i(x, t)$ or $f_j(x, t)$ are per area, such that the force of infection $\hat{h}^*_{i \leftarrow j}(t, x)$ has units per time per area as opposed to $h^*_{i \leftarrow j}(t, A_{x, \rho})$ which has units per time. Conceptually, for $h^*_{i \leftarrow j}(t, A_{x, \rho})$ we have already integrated over area so we cancel out the per area units.  
@@ -205,7 +205,7 @@ where $f_i(x, t)$ and $f_j(x, t)$ are the probability density functions of space
 Assuming a stationary process, we can write equation \ref{eq:limit} as
 
 \begin{equation}
-    \hat{h}^*_{i \leftarrow j}(t, x) =  \frac{\beta' \lambda}{\nu} [f_i(x) \int_{s \in A_{x, r}} f_j(s) ds]
+    \hat{h}^*_{i \leftarrow j}(t, x) =  \frac{\beta' \lambda}{\nu} [f_i(x) \int_{y \in A_{x, r}} f_j(y) dy]
 \end{equation}
 
 Furthermore, if we assume that the space use of host $j$ is relatively uniform within the contact area $A_{x, r}$ we can simplify to
@@ -220,7 +220,7 @@ Remembering that $\beta' = \tilde{\beta} / A_{x, r} = \tilde{\beta} / \pi r^2$, 
     \hat{h}^*_{i \leftarrow j}(t, x) =  \frac{\tilde{\beta} \lambda}{\nu} [f_i(x) f_j(x)]
 \end{equation}
 
-Integrating $\hat{h}^*_{i \leftarrow j}(t, x)$ over some area of interest centered at $x$ would yield  $h^*_{i \leftarrow j}(t, A_{x, d}) = \frac{\tilde{\beta} \lambda}{\nu} \int_{A_{x, d}} [f_i(s) f_j(s) ds] $. This is reminiscent of the equation 17 in \cite{Martinez-Garcia2020} where a limiting case of the mean encounter rate of two individuals moving according to an Ornstein-Uhlenbeck movement process is proportional to the inner product of their utilization distributions. 
+Integrating $\hat{h}^*_{i \leftarrow j}(t, x)$ over some area of interest centered at $x$ would yield  $h^*_{i \leftarrow j}(t, A_{x, r}) = \frac{\tilde{\beta} \lambda}{\nu} \int_{A_{x, r}} [f_i(y) f_j(y) dy] $. This is reminiscent of the equation 17 in \cite{Martinez-Garcia2020} where a limiting case of the mean encounter rate of two individuals moving according to an Ornstein-Uhlenbeck movement process is proportional to the inner product of their utilization distributions. 
 
 Including correlation in movement into this formulation of PMoveSTIR is more theoretically and empirically challenging, and we leave this task for a later paper.
 
@@ -234,18 +234,18 @@ To derive equation 5 in the main text that assumes stationarity in utilization d
     \end{aligned}
     \label{eq:foi_cov}
 \end{equation}
-Here, $p_i(x, t)$ and $p_j(x, u)$ represent the probabilities of host $i$ and $j$ using location $x$ at time $t$ and $u$, respectively. The parameters $\tilde{\beta}$ and $\lambda$ are the acquisition and deposition rates respectively, and $A_x$ is the area of location $x$.  $Cov(\delta'_{x_i(t)}(x), \delta'_{x_j(u)}(x))$ gives the covariance in how host $i$ and $j$ at time $t$ and $u$ are using area $x$.  Finally, $\theta(t - u)$  gives the survival probability of a pathogen at time $t$ that was deposited at time $u$. 
+Here, $p_i(x, t)$ and $p_j(x, u)$ represent the probabilities of host $i$ and $j$ using location $x$ at time $t$ and $u$, respectively. The parameters $\tilde{\beta}$ and $\lambda$ are the acquisition and deposition rates respectively, and $A_x$ is the area of location $x$.  $Cov(\delta'_{x_i(t)}(x), \delta'_{x_j(u)}(x))$ gives the covariance in how host $i$ and $j$ at time $t$ and $u$ are using area $x$.  Finally, $\theta(t - u)$  gives the survival probability at time $t$ of a pathogen that was deposited at time $u$. 
 
 If we now assume a stationary utilization distribution, the time indexes on $p_i(x, t)$ and $p_j(x, u)$ are irrelevant -- the logic here is that, by definition, the mean of a stationary distribution is independent of time so $p_i(x, t) = p_i(x)$ and $p_j(x, u) = p_j(x)$. Therefore, we can write  
 
 $$
-h^*_{i \leftarrow j}(t, x) = \frac{\tilde{\beta}}{A_x} \lambda \left[p_i(x) p_j(x) \int_0^\infty \theta(\tau) d\tau  + \int_{-\infty}^t Cov(\delta'_{x_i(t)}(x), \delta'_{x_j(u)}(x)) \Theta(t - u) du\right].
+h^*_{i \leftarrow j}(t, x) = \frac{\tilde{\beta}}{A_x} \lambda \left[p_i(x) p_j(x) \int_0^\infty \theta(\tau) d\tau  + \int_{-\infty}^t Cov(\delta'_{x_i(t)}(x), \delta'_{x_j(u)}(x)) \theta(t - u) du\right].
 $$
 
 In addition, given stationarity, $h^*_{i \leftarrow j}(t, x)$ does not depend on time, such that 
 
 $$
-h^*_{i \leftarrow j}(x) = \frac{\tilde{\beta}}{A_x} \lambda \left[p_i(x) p_j(x) \int_0^\infty S(\tau) d\tau  + \int_{-\infty}^t Cov(\delta'_{x_i(t)}(x), \delta'_{x_j(u)}(x)) S(t - u) du\right].
+h^*_{i \leftarrow j}(x) = \frac{\tilde{\beta}}{A_x} \lambda \left[p_i(x) p_j(x) \int_0^\infty \theta(\tau) d\tau  + \int_{-\infty}^t Cov(\delta'_{x_i(t)}(x), \delta'_{x_j(u)}(x)) \theta(t - u) du\right].
 $$
 
 Moreover, given stationarity, we know that $Cov(\delta'_{x_i(t)}(x), \delta'_{x_j(u)}(x))$ just depends on the time lag $s = t - u$ and not specific time stamps. Thus, we can write
@@ -257,9 +257,10 @@ Moreover, given stationarity, we know that $Cov(\delta'_{x_i(t)}(x), \delta'_{x_
     \label{eq:foi_stationary}
 \end{equation}
 
-By replacing $\theta(s)$ with the exponential survival function $e^{-\nu s}$ we obtain equation 5 in the main text.
+Finally, we use the relationship $Cov(X,Y)=\sigma(X)\sigma(Y)+Corr(X,Y)$, where $\sigma(X)$ is the standard deviation of the process $X$, to obtain equation 5 in the main text.
+%By replacing $\theta(s)$ with the exponential survival function $e^{-\nu s}$ we obtain equation 5 in the main text.
 
-In the lower left-hand corner of Fig. 1 in the main text, we have the case where space use is uniform and time is stationary. We again assume that pathogen decay is exponentially distributed with a rate of decay $\nu$ such that $S(s) = \exp(-\nu s)$. Given these assumptions, we can write equation \ref{eq:foi_stationary} as
+In the lower left-hand corner of Fig. 1 in the main text, we have the case where space use is uniform and time is stationary. We assume that pathogen decay is exponentially distributed with a rate of decay $\nu$ such that $\theta(s) = \exp(-\nu s)$. Given these assumptions, we can write equation \ref{eq:foi_stationary} as
 \begin{equation}
     \begin{aligned}
         h^*_{i \leftarrow j}(A_x) = \beta' \lambda \left[\frac{A_x}{A_{tot}}\frac{A_x}{A_{tot}} \frac{1}{\nu} +  \int_{0}^{\infty} Cov(\delta_{i \in A_x}, \delta_{j \in A_x} | s) e^{-\nu s} ds\right]
@@ -346,12 +347,12 @@ To demonstrate the implications of correlated movement on classic mean-field epi
 \end{equation}
 where $\sum_{j \in N_{-i}}$ is summing over all individuals in the population excluding $i$, $\sum_{x \in Area}$ is summing over all grid cells on the landscape, and $h^*_{i \leftarrow j}(x, t)$ is the force of infection felt by $i$ from $j$ at location $x$ at time $t$.
 
-Using equation 7 in the main text, we can write $h^*_{i \leftarrow j}(x, t)$
+Using equation 8 in the main text, we can write $h^*_{i \leftarrow j}(x, t)$
 
 $$
 h^*_{i \leftarrow j}(x, t) = \frac{\tilde{\beta} \lambda \pi \eta}{A_x} \left[\frac{A_x}{A_{tot}}\frac{A_x}{A_{tot}} + \frac{A_x}{A_{tot}}(1 - \frac{A_x}{A_{tot}}) \rho \right],
 $$
-where $\rho$ indicates the level correlation between individuals. 
+where $\rho$ indicates the correlation in space use between individuals. 
 
 Focusing on the term $p_{i, S}(t) \sum_{j \in N_{-i}} p_{j, I}(t) \sum_{x \in Area} h_{i \leftarrow j}^*(x, t)$, we can expand this term as
 
@@ -391,7 +392,7 @@ We then sum $\frac{d p_{i, S}(t)}{dt}$, $\frac{d p_{i, I}(t)}{dt}$, and $\frac{d
     \label{eq:sir_population_full}
 \end{equation}
 
-Finally, we can recognize that when $N$ is large, typically $S(t)I(t) \gg \sum_{i \in N} p_{i, I}(t) p_{i, S}(t)$ such that we can approximate this term as $S(t)I(t)$ for large $N$. We then obtain the SIR equation given in the main text
+Finally, we can recognize that when $N$ is large, typically $S(t)I(t) \gg \sum_{i \in N} p_{i, I}(t) p_{i, S}(t)$ such that we can approximate this term as $S(t)I(t)$ for large $N$. We then obtain the SIR equation 
 
 \begin{equation}
     \begin{aligned}
@@ -403,7 +404,19 @@ Finally, we can recognize that when $N$ is large, typically $S(t)I(t) \gg \sum_{
 \end{equation}
 where $\beta^* = \frac{\hat{\beta}}{A_{tot}}$.
 
-\bibliographystyle{amnat.bst}
+\section*{Appendix F: Simulating correlated movement}
+Here we describe the process followed to simulate trajectories affected by a positive interaction strength between pairs of individuals. The approach is inspired by the convolution method of \citet{Scharf2018}, designed to infer attraction based on observed movement. In our simulation, animals follow a random walk, but their movement is biased towards their home range center. To start, we draw the coordinates of the home range center from a Poisson distribution with parameter $\lambda=dp\gamma$, where $\gamma$ defines the scale of diffusion. Here we take $dp=0.2$ and $\gamma=1000$. Each coordinate is drawn independently, and individuals start the simulation at their home range centers. 
+
+The individual coordinates of each individual are then updated iteratively using the following formula:
+\begin{equation}
+	x_i(t+1)=x_i(t)-\frac{1}{\tau}(x_i(t)-x_{\Omega,i})+\sqrt{\gamma}\epsilon
+\end{equation}
+The term $\sqrt\gamma\epsilon$ defines a diffusive Brownian motion process, where $\epsilon$ is drawn independently from a standard Normal distribution (mean 0, standard deviation of 1) at each step. The $1/\tau$ parameter defines the strength of attraction back to the home range center. 
+We generate two independent trajectories for each simulation by iteratively updating the position of both individuals for a number of steps (500, 1000, 2000, or 5000). 
+We then modify the trajectories to represent interaction between the individuals. 
+
+
+
 \bibliography{references}
 
 \clearpage

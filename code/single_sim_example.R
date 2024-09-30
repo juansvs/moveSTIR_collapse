@@ -34,7 +34,7 @@ sapply(1:2, \(i) lines(A$x[1:500,i],A$y[1:500,i], col = hcl.colors(2, palette = 
 
 #### UDs and products ####
 # get the utilization distributions of both individuals
-uds <- getUDs(A)
+uds <- getUDs(A, dr = 1)
 
 # Plot UDs together
 pdf("../docs/figures/example_UDs_overlay.pdf", width = 3, height = 3)
@@ -53,7 +53,7 @@ dev.off()
 # Get the product of the UDs, p_i(x) and p_j(x), as well as the product of their
 # standard deviations sqrt(p_i(x)(1-p_i(x)))*sqrt(p_j(x)(1-p_j(x)))
 prods <- getUDprod(uds)
-# Plot
+
 zrng <- range(unlist(lapply(prods,lapply,cellStats,range)))
 # pdf("../docs/figures/example_UDprod.pdf", width = 4, height = 3,family = "sans")
 par(mar = c(0.5,0.5,0.5,4))
@@ -187,11 +187,11 @@ sapply(test, cellStats,sum)
 # grid resolution d, as well as the interaction strength. I run this through the
 # run_sims_cluster code in the UTK HPC, and import the results here
 outdf <- read.csv("outputs/231124_sims_out.txt",header = F)[,-10]
-social <- c(0,0.5, 0.7, 0.9,0.93, 0.96, 1)
+# social <- c(0,0.5, 0.7, 0.9,0.93, 0.96, 1)
 nus <- 1/(24*c(1/12, 1/3, 1, 3, 7))
 gridres <- c(5, 10, 20)
-names(outdf) <- c("sim", "nu", "Ax","Atoti","Atotj", "foi_ud", "foi_full1", "foi_full2", "overlap")
-outdf$social <- rep(social, each = 15)                           
+# names(outdf) <- c("sim", "nu", "Ax","Atoti","Atotj", "foi_ud", "foi_full1", "foi_full2", "overlap")
+# outdf$social <- rep(social, each = 15)                           
 head(outdf)
 
 #### effect of length of tracking ####
@@ -236,7 +236,7 @@ p1 <- outdf %>% group_by(sim) %>%
 p1
 
 p2 <- filter(outdf, social==0) %>% slice_head(by=sim, n=1) %>% 
-  ggplot(aes(overlap, (foi_full1/foi_ud)))+
+  ggplot(aes(overlap, ((foi_full1-foi_ud)/foi_ud)))+
   geom_hline(yintercept = 1,linetype=2)+
   geom_point()+
   theme_minimal(base_size = 14)+
@@ -262,7 +262,7 @@ outdf %>% group_by(sim,nu) %>% slice_head(n=1) %>%
   geom_point()+
   scale_color_discrete(type=hcl.colors(4, "BluGrn", rev=T))+
   theme_classic(base_size = 12)+
-  labs(x = "Decay time (days)", y = expression(paste(Delta," FOI")), color = "Interaction")+
+  labs(x = "Mean decay time (days)", y = expression(paste(Delta," FOI")), color = "Interaction")+
   theme(legend.position = c(0.9,0.2))
  
 # Yet another way, boxplot with diff color for with and without (as in a.). This
@@ -301,7 +301,7 @@ outdf %>% group_by(sim) %>% slice_max(order_by = Ax,n=5) %>%
 p3 <- outdf %>%  group_by(sim) %>% 
   filter(Ax == max(Ax)) %>% 
   # slice_max(order_by = Ax,n=5) %>% 
-  filter(social %in% c(0,0.7,0.96,1)) %>% 
+  filter(social %in% c(0,0.7,0.95,1)) %>% 
   ggplot(aes(1/nu/24,foi_full1/mean(foi_full1),color=factor(social)))+
   geom_smooth(method = "lm", se=F)+
   geom_point()+
@@ -313,13 +313,13 @@ p3
 # covariance contribution, different nu, 4 interaction values
 p4 <- outdf %>%  group_by(sim) %>% 
   filter(Ax == max(Ax)) %>% 
-  filter(social %in% c(0,0.7,0.96,1)) %>% 
-  ggplot(aes(1/nu/24,(foi_full1)/foi_ud,color=factor(social)))+
+  filter(social %in% c(0,0.7,0.95,1)) %>% 
+  ggplot(aes(1/nu/24,(foi_full1-foi_ud)/foi_ud,color=factor(social)))+
   geom_hline(yintercept = 1, linetype=2)+
   geom_point(show.legend = F, position = position_dodge(width = 0.2))+
   scale_y_log10()+
   theme_minimal(base_size = 14)+
-  labs(x = "Decay time (days)", y = "FOI ratio", color = "Interaction")+  
+  labs(x = "Mean decay time (days)", y = "FOI ratio", color = "Interaction")+  
   scale_color_discrete(type=hcl.colors(4, "BluGrn", rev=T))
 p4
 
@@ -336,8 +336,9 @@ p4
 
 # Effect of changing grid size, matching trajectories
 
-p5 <- outdf %>% filter(near(nu, 1/2), social %in% c(0,0.7,0.96,1)) %>% 
-  group_by(sim) %>% 
+p5 <- outdf %>% filter(near(nu, 1/2), social %in% c(0,0.7,0.95,1)) %>% 
+  # group_by(sim) %>% 
+  mutate(Atoti = max(Atoti), Atotj = max(Atotj), .by = sim) %>% 
   ggplot(aes(Ax/Atoti/1e4,foi_full1/mean(foi_full1), color = factor(social)))+
   # stat_smooth(method = "lm", se = F)+
   geom_point(show.legend = F)+
@@ -349,16 +350,19 @@ p5 <- outdf %>% filter(near(nu, 1/2), social %in% c(0,0.7,0.96,1)) %>%
 # theme(legend.text = element_text(size = 10), legend.title = element_text(size=11))
 p5
 p6 <- outdf %>% filter(near(nu, 1/2), social %in% c(0,0.7,0.96,1)) %>% 
-  group_by(sim) %>% 
-  ggplot(aes(Ax/Atoti/1e4,foi_full1/foi_ud, color = factor(social)))+
+  mutate(Atoti = max(Atoti), Atotj = max(Atotj), .by = sim) %>% 
+  # group_by(sim) %>% 
+  ggplot(aes(Ax/Atoti/1e4,(foi_full1-foi_ud)/foi_ud, color = factor(social)))+
   geom_hline(yintercept = 1, linetype=2)+
   # stat_smooth(method = "lm", se = F)+
   geom_point(show.legend = F)+
   theme_minimal(base_size = 14)+
-  labs(x = expression(paste("Relative cell size (",A[x]/A[tot],")")), y = "FOI ratio", color = "Interaction")+
+  labs(x = expression(paste("Relative cell size ",A[x]/A[tot],"(%)")), y = "FOI ratio", color = "Interaction")+
   scale_color_discrete(type=hcl.colors(4, "BluGrn", rev=T))+
   theme(legend.text = element_text(size = 10), legend.title = element_text(size=11))+
-  scale_y_log10()
+  # scale_y_log10()+  
+  scale_x_continuous(labels = \(x) x*100)
+
 p6
 # The effect of cell size varies. For perfectly overlapping individuals larger
 # cells result in lower FOI. The opposite is true for slightly lower interaction

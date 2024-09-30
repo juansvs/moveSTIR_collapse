@@ -14,7 +14,7 @@ clusterEvalQ(cl, source("code/functions.R"))
 
 social <- c(0,0.5, 0.7, 0.9,0.93, 0.96, 1)
 nus <- 1/(24*c(1/12, 1/3, 1, 3, 7))
-gridres <- c(5, 10, 20)
+gridres <- c(1, 5, 10)
 iterations <- 20
 
 trajs <- (replicate(iterations, lapply(social, \(x) simulate_tracks(tau = 5, dp = 2, social = x))))
@@ -22,7 +22,7 @@ trajs <- (replicate(iterations, lapply(social, \(x) simulate_tracks(tau = 5, dp 
 UDout <- foreach(i = seq_along(trajs), .packages = c("move","ctmm")) %:% foreach(gr = gridres) %dopar% {
   list(SIM = i,
        TRAJS = trajs[[i]],
-       UDS = getUDs(trajs[[i]],res = gr))
+       UDS = getUDs(trajs[[i]],dr = gr))
 }
 
 UDout<-unlist(UDout,recursive=FALSE)
