@@ -26,7 +26,7 @@ pairCorrs <- function(X, prewt = TRUE, fltr = NULL, export = F) {
   ovlpcells <- unique(pos1)[unique(pos1) %in% unique(pos2)]
   if(length(ovlpcells)==0) {
     cat("\nThere are no overlap cells")
-    NA
+    return(list(CAB = NA, CBA = NA, nvisits = 0, nsiglags = 0, cellfreq = list(p1 = table(pos1)[table(pos1)>5], p2 = table(pos2)[table(pos2)>5])))
   } else {
     nvisits <- matrix(nrow = length(ovlpcells), ncol = 2)
     nsiglags <- numeric(length(ovlpcells))
@@ -67,7 +67,7 @@ pairCorrs <- function(X, prewt = TRUE, fltr = NULL, export = F) {
       write.csv(cormat_ab, paste0("outputs/correlations_10min_",ids[ind1],"-",ids[ind2],"_",format(Sys.Date(), "%m%d"), ".csv"))
       write.csv(cormat_ba, paste0("outputs/correlations_10min_",ids[ind2],"-",ids[ind1],"_",format(Sys.Date(), "%m%d"), ".csv"))
     }
-    return(list(CAB = cormat_ab, CBA = cormat_ba, nvisits = nvisits, nsiglags = nsiglags))
+    return(list(CAB = cormat_ab, CBA = cormat_ba, nvisits = nvisits, nsiglags = nsiglags, cellfreq = list(p1 = table(pos1)[table(pos1)>5], p2 = table(pos2)[table(pos2)>5])))
   }
 }
 
