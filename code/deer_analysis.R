@@ -17,6 +17,9 @@ library(cowplot)
 library(move)
 library(ctmm)
 
+# custom functions
+source("code/deer_functions.R")
+
 #### Parameters ####
 # Set epidemiological parameters: threshold contact distance and parasite decay rate
 contact_dist <- 10 # meters
@@ -95,12 +98,11 @@ outnames <- paste0("outputs/HRpoly_", names(FITS), ".shp")
 mapply(writeShapefile,deer_UDs,outnames)
 hr95 <- lapply(UD, SpatialPolygonsDataFrame.UD)
 
-#### UD prod and SD prod ####
+#### UD prod and SD prod calc and export ####
 
 # Possible combinations of individuals
 combs <- combn(length(ids), 2)
 
-#### Correlations ####
 # get names of files with UD grids
 fnames <- paste0("outputs/UD_X", ids, ".tif")
 for (i in seq_len(ncol(combs))) {
@@ -122,7 +124,7 @@ for (i in seq_len(ncol(combs))) {
   writeRaster(prods$SD, paste0("outputs/SDprod_",ids[ind1],"-",ids[ind2],".tif"), overwrite = T)
 }
 
-
+#### Correlations ####
 # Calculate UD and SD products from UD pair values, the correlations, and
 # corresponding FOIs
 deer_corrs_pw_flt <- list()
@@ -133,7 +135,6 @@ for (i in seq_len(ncol(combs))) {
   
   r1 <- raster(fnames[ind1]) 
   r2 <- raster(fnames[ind2])
-  
 
   # get UD and SD products
   prods <- getProds(r1,r2)
@@ -233,7 +234,12 @@ cor(corvisitsdf)
 
 udprodfiles <- list.files("outputs/", "UDprod(.*)[[:digit:]].tif$", full.names = T) 
 sdprodfiles <- list.files("outputs/", "SDprod(.*)[[:digit:]].tif$", full.names = T) 
-deer_FOIs_nus_prewt <- data.frame()
+deer_FOIs_nus_prewt <- data.frame(ind1=character(length(combs)), ind2=character(length(combs)), correlation=logical(length(combs)),FOI_CWD=numeric(length(combs)),FOI_SARS=numeric(length(combs)), 
+                                  FOI_UD_CWD=numeric(length(combs)), FOI_UD_SARS=numeric(length(combs)), FOI_direct=numeric(length(combs)), 
+                                  cell_ratio_SARS=numeric(length(combs)), cell_ratio_CWD=numeric(length(combs)),
+                                  percellFOI_SARS=numeric(length(combs)), percellFOI_CWD=numeric(length(combs)), percellFOI_SARS_sd=numeric(length(combs)), percellFOI_CWD_sd=numeric(length(combs)))
+nus <- c(SARS = 1/3600, CWD = 3.04e-9) # decay rates in seconds^-1
+rowix <- 1
 for (i in 1:ncol(combs)) {
   ind1 = combs[1,i]
   ind2 = combs[2,i]
@@ -246,7 +252,6 @@ for (i in 1:ncol(combs)) {
 
   # corfiles <- c(paste0("outputs/correlations_10min_",id1,"-",id2,"_1109.csv"),
   #               paste0("outputs/correlations_10min_",id2,"-",id1,"_1109.csv"))
-  nus <- c(SARS = 1/3600, CWD = 3.04e-9) # decay rates in seconds^-1
   Area <- prod(res(udprod)) # cell area in m^2
   lagt <- 60*24*3600 # period to consider for exact integral scaling UD product
   foiudsars <- beta*lam/Area*1/nus[1]*udprod
@@ -254,7 +259,7 @@ for (i in 1:ncol(combs)) {
   foidirect <- beta*lam/Area*udprod
   for (j in 1:2) {
     # if (file.exists(corfiles[j])) {
-    CorrExists <- !all(is.na(cors))
+    CorrExists <- !all(is.na(cors[[1]]))
     if(CorrExists) {
       cat("using correlations for", id1, id2,"\n")
       # corrs <- read.csv(corfiles[j], row.names = 1)
@@ -280,8 +285,8 @@ for (i in 1:ncol(combs)) {
       
       cell_ratio_sars <- mean(corrintSARS*sdvals/udvals_sars)
       cell_ratio_cwd <- mean(corrintCWD*sdvals/udvals_cwd)
+        
       ###
-      
       # create output rasters for integrated corr term, set values to 0
       corrastCWD <- corrastSARS <- udprod
       values(corrastCWD) <- values(corrastSARS) <- 0
@@ -293,33 +298,51 @@ for (i in 1:ncol(combs)) {
       # create the FOI rasters 
       foiCWDrast <- beta*lam/Area*(udprod*(1-exp(-nus[2]*lagt))/nus[2]+sdprod*corrastCWD)
       foiSARSrast <- beta*lam/Area*(udprod*1/nus[1]+sdprod*corrastSARS)
-      raster::plot(foiSARSrast)
+      
+      # calculate FOI for cells frequently visited
+      visitedCells <- as.numeric(names(cors$cellfreq[[j]]))
+      percellFOI_sars_mean <- mean(foiCWDrast[visitedCells])
+      percellFOI_cwd_mean <- mean(foiSARSrast[visitedCells])
+      percellFOI_sars_sd <- sd(foiCWDrast[visitedCells])
+      percellFOI_cwd_sd <- sd(foiSARSrast[visitedCells])
+      
+      # raster::plot(foiSARSrast)
     } else {
       cat("using UD only for",id1, "and", id2,"\n")
       foiCWDrast <- foiudcwd
       foiSARSrast <- foiudsars
       cell_ratio_sars <- cell_ratio_cwd <- 0
+      
+      # calculate FOI for cells frequently visited
+      visitedCells <- as.numeric(names(cors$cellfreq[[j]]))
+      percellFOI_sars_mean <- mean(foiCWDrast[visitedCells])
+      percellFOI_cwd_mean <- mean(foiSARSrast[visitedCells])
+      percellFOI_sars_sd <- sd(foiCWDrast[visitedCells])
+      percellFOI_cwd_sd <- sd(foiSARSrast[visitedCells])
     }
     foiCWDrast <- max(foiCWDrast,0)
     foiSARSrast <- max(foiSARSrast,0)
     idi <- ifelse(j == 1, id1,id2)
     idj <- ifelse(j == 1, id2,id1)
-    deer_FOIs_nus_prewt <- rbind(deer_FOIs_nus_prewt, c(idi,idj, CorrExists,
+    deer_FOIs_nus_prewt[rowix,] <- list(idi,idj, CorrExists,
                                             cellStats(foiCWDrast, sum),
                                             cellStats(foiSARSrast, sum),
                                             cellStats(foiudcwd, sum),
                                             cellStats(foiudsars, sum),
                                             cellStats(foidirect, sum),
                                             cell_ratio_sars,
-                                            cell_ratio_cwd
-                                            )
+                                            cell_ratio_cwd,
+                                            percellFOI_sars_mean,
+                                            percellFOI_cwd_mean,
+                                            percellFOI_sars_sd,
+                                            percellFOI_cwd_sd
+                                            
                            )
+    rowix = rowix+1
   }
 }
-
-names(deer_FOIs_nus_prewt) <- c("ind1", "ind2", "correlation","FOI_CWD","FOI_SARS", 
-                          "FOI_UD_CWD", "FOI_UD_SARS", "FOI_direct", "cell_ratio_SARS", "cell_ratio_CWD")
 deer_FOIs_nus_prewt
+
 write.csv(deer_FOIs_nus_prewt, "outputs/deer_totFOI_CWDSARS.csv", row.names = F, quote = F)
 
 # The FOI experienced by deer differs orders of magnitude depending on the
@@ -590,7 +613,7 @@ with(list(db = deer_FOIs_nus_prewt2,
           Vsize = tapply(deer_FOIs_nus_prewt2$FOI_SARS, deer_FOIs_nus_prewt2$ind2,sum)),{
             plot(grf, layout = co, 
                  # vertex.label.dist = 2, vertex.label.degree = pi/2, vertex.label.color = "black",vertex.label.family = "sans",
-                 edge.width = log(deer_FOIs_nus_prewt2$FOI_SARS/refwidth), edge.arrow.size=0, 
+                 edge.width = log(deer_FOIs_nus_prewt2$FOI_SARS/refwidth), edge.arrow.size=0,
                  vertex.color=mycols, vertex.label = NA, vertex.size = 3*log(Vsize/refsize))
             mtext("FOI with correlation", 3, 0, cex = 1.3)
             mtext(bquote(paste("Relative ",R[0] == .(format(R0scaled[1],digits = 2)))), 1,0.5)
@@ -620,37 +643,38 @@ with(list(db = deer_FOIs_nus_prewt2,
             mtext(bquote(paste("Relative ",R[0] == .(format(R0scaled[3],digits = 2)))), 1,0.5)
           })
 
-# plot FOI surface for 71-89 and 71-99
-par(omi = c(3,3.2,0.1,3),new=T, cex = 0.8)
-with(list(udprod = raster("outputs/UDprod_151571-151589.tif"),
-          sdprod = raster("outputs/SDprod_151571-151589.tif")), {
-            corrast <- udprod
-            values(corrast) <- 0
-            cors <- deer_corrs_pw_flt[[3]]$CAB
-            lags <- as.numeric(rownames(cors))*600
-            intcors <- colSums(cors*exp(-1/3600*lags)*600)
-            corcells <- as.numeric(dimnames(cors)$cell)
-            corrast[corcells] <- intcors
-            foirast <- max(beta*lam/100*(udprod/nus[1]+sdprod*corrast),0)
-            plot(dat1[dat1$animal_id %in% c(151571,151589),c("x_","y_")], 
-                 ann = F, asp = 1, type = 'n', xaxt='n', yaxt='n', bty='n')
-            raster::plot(foirast*3600*24, col=hcl.colors(25,'Oranges', rev=T), legend.width = 1.5,
-                         legend.shrink = 0.5, lwd = 0,
-                         legend.args = list(text = expression(FOI (days^-1)), side = 3, adj=0), 
-                         add=T)
-            sp::plot(polygons(hr95[[1]])[2], add = T, border = mycols[1], col = NA, lwd = 3)
-            sp::plot(polygons(hr95[[4]])[2], add = T, border = mycols[4], col = NA, lwd = 3)
-            # points(dat1[dat1$animal_id==151571,c('x_','y_')], col = mycols[1], cex = 0.5)
-            # points(dat1[dat1$animal_id==151589,c('x_','y_')], col = mycols[4], cex = 0.5)
-          })
+# # plot FOI surface for 71-89 and 71-99
+# par(omi = c(3,3.2,0.1,3),new=T, cex = 0.8)
+# with(list(udprod = raster("outputs/UDprod_151571-151589.tif"),
+#           sdprod = raster("outputs/SDprod_151571-151589.tif")), {
+#             corrast <- udprod
+#             values(corrast) <- 0
+#             cors <- deer_corrs_pw_flt[[3]]$CAB
+#             lags <- as.numeric(rownames(cors))*600
+#             intcors <- colSums(cors*exp(-1/3600*lags)*600)
+#             corcells <- as.numeric(dimnames(cors)$cell)
+#             corrast[corcells] <- intcors
+#             foirast <- max(beta*lam/100*(udprod/nus[1]+sdprod*corrast),0)
+#             plot(dat1[dat1$animal_id %in% c(151571,151589),c("x_","y_")], 
+#                  ann = F, asp = 1, type = 'n', xaxt='n', yaxt='n', bty='n')
+#             raster::plot(foirast*3600*24, col=hcl.colors(25,'Oranges', rev=T), legend.width = 1.5,
+#                          legend.shrink = 0.5, lwd = 0,
+#                          legend.args = list(text = expression(FOI (days^-1)), side = 3, adj=0), 
+#                          add=T)
+#             sp::plot(polygons(hr95[[1]])[2], add = T, border = mycols[1], col = NA, lwd = 3)
+#             sp::plot(polygons(hr95[[4]])[2], add = T, border = mycols[4], col = NA, lwd = 3)
+#             # points(dat1[dat1$animal_id==151571,c('x_','y_')], col = mycols[1], cex = 0.5)
+#             # points(dat1[dat1$animal_id==151589,c('x_','y_')], col = mycols[4], cex = 0.5)
+#           })
 
-
-par(mar=c(2,2,0,0), omi = c(3,6.6,0.5,0.3),new=T)
+# FOI vs overlap plot
+# par(omi = c(3,3.2,0.1,3),new=T, cex = 0.8)
+par(mar=c(2,2,0,0), omi = c(3,3.5,0.5,2),new=T)
 with(list(db = deer_FOIs_nus_prewt2), {
-  plot(db$overlap, db$FOI_SARS/db$FOI_UD_SARS, xlim = c(0,1), type = 'n',log = "y",ann = F, xaxt = 'n',yaxt = 'n', cex.axis=0.8)
+  plot(db$overlap, db$cell_ratio_SARS, xlim = c(0,1), type = 'n',ann = F, xaxt = 'n',yaxt = 'n', cex.axis=0.8)
   grid()
-  points(db$overlap, db$FOI_CWD/db$FOI_UD_CWD, bg = pathcols[2], pch=24)
-  points(db$overlap, db$FOI_SARS/db$FOI_UD_SARS, bg = pathcols[1], pch=21)
+  points(db$overlap, db$cell_ratio_CWD, bg = pathcols[2], pch=24)
+  points(db$overlap, db$cell_ratio_SARS, bg = pathcols[1], pch=21)
   axis(1,cex.axis = 0.8, tcl = -0.3, padj = -1.5)
   axis(2,cex.axis = 0.8,  tcl = -0.3, hadj = 0.5, las=1)
   mtext("Home Range Overlap", 1,1.1)
@@ -661,9 +685,9 @@ with(list(db = deer_FOIs_nus_prewt2), {
 par(oma = c(0,0,0,0), mar = c(0,0,0,0), new = T)
 plot.new()
 plot.window(c(0,1),c(0,1))
-text(x = c(0,0.4,0.77,0), 
-     y = c(0.97,0.97,0.97,0.43), 
-     labels = c("a","b","c","d"), cex = 1.4, font = 2)
+text(x = c(0,0.4,0), 
+     y = c(0.97,0.97,0.43), 
+     labels = c("a","b","c"), cex = 1.4, font = 2)
 
 
 ###
