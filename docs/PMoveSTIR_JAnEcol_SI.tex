@@ -405,17 +405,28 @@ Finally, we can recognize that when $N$ is large, typically $S(t)I(t) \gg \sum_{
 where $\beta^* = \frac{\hat{\beta}}{A_{tot}}$.
 
 \section*{Appendix F: Simulating correlated movement}
-Here we describe the process followed to simulate trajectories affected by a positive interaction strength between pairs of individuals. The approach is inspired by the convolution method of \citet{Scharf2018}, designed to infer attraction based on observed movement. In our simulation, animals follow a random walk, but their movement is biased towards their home range center. To start, we draw the coordinates of the home range center from a Poisson distribution with parameter $\lambda=dp\gamma$, where $\gamma$ defines the scale of diffusion. Here we take $dp=0.2$ and $\gamma=1000$. Each coordinate is drawn independently, and individuals start the simulation at their home range centers. 
+Here we describe the process followed to simulate trajectories affected by a positive interaction strength between pairs of individuals. The approach is inspired by the convolution method of \citet{Scharf2018}, designed to infer attraction based on observed movement. In our simulation, animals follow a random walk, but their movement is biased towards their home range center.  We use an Ornstein-Uhlenbeck process to represent this movement. 
+To start, we draw the coordinates of the home range center from a Poisson distribution with parameter $\lambda=d_p\gamma$, where $\gamma$ defines the scale of diffusion, and $d_p$ is a scalar. We set $d_p=0.2$ and $\gamma=1000$. Each coordinate is drawn independently, and individuals start the simulation at their home range centers. 
 
-The individual coordinates of each individual are then updated iteratively using the following formula:
+The coordinates of each individual are updated iteratively using the following formula:
 \begin{equation}
 	x_i(t+1)=x_i(t)-\frac{1}{\tau}(x_i(t)-x_{\Omega,i})+\sqrt{\gamma}\epsilon
 \end{equation}
-The term $\sqrt\gamma\epsilon$ defines a diffusive Brownian motion process, where $\epsilon$ is drawn independently from a standard Normal distribution (mean 0, standard deviation of 1) at each step. The $1/\tau$ parameter defines the strength of attraction back to the home range center. 
+The term $\sqrt\gamma\epsilon$ defines a diffusive Brownian motion process, where $\epsilon$ is drawn independently from a standard Normal distribution (mean 0, standard deviation of 1) at each step. The $1/\tau$ parameter defines the strength of attraction back to the home range center, $\Omega$.
 We generate two independent trajectories for each simulation by iteratively updating the position of both individuals for a number of steps (500, 1000, 2000, or 5000). 
-We then modify the trajectories to represent interaction between the individuals. 
 
-
+We then modify the trajectories to include the effect of interaction strength between the individuals. Let $\mathbf{x}_\tau$ and $\mathbf{y}_\tau$ be vectors containing the x and y coordinates of both individuals at time step $\tau$, we obtain the modified positions as
+\begin{equation}
+	x'_\tau=h^{soc}(\tau_{soc},\tau)\cdot\mathbf{x}_\tau
+\end{equation}
+$h^{soc}$ is the social convolution kernel, defined as \citep{Scharf2018}
+\begin{equation}
+\begin{aligned}
+	h_{ij}^{soc}(\tau_{soc},\tau)&\equiv\mathbf{1}_{\tau=\tau_{soc}}\frac{w_{ij}(\tau_{soc})}{|w_i(\tau_{soc})|}\\
+	|w_i(\tau_{soc})|&\equiv\sum_{j=1}^p w_{ij}(\tau_{soc})
+\end{aligned}
+\end{equation}
+Here we focus solely on pairwise interactions, we assume constant attraction across time, and symmetric interactions, so in practice the social kernel used in our simulations is obtained as $h=\frac{1}{1+w}\left(\begin{smallmatrix}1&w\\w&1\end{smallmatrix}\right)$, where $w$ is the strength of attraction from 0 (no attraction) to 1 (overlapping positions) between both individuals. This process creates two new trajectories that are no longer independent, which can generate correlation in local space use. Note that the interaction strength $w$ defined attraction of the trajectories at the same time points, so correlations generated are more likely to appear at short lags. 
 
 \bibliography{references}
 
