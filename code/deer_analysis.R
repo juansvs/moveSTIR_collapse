@@ -278,8 +278,8 @@ for (i in 1:ncol(combs)) {
       udvals_cwd <- (1-exp(-nus[2]*lagt))/nus[2]*udprod[corcells]
       sdvals <- sdprod[corcells]
       
-      cell_ratio_sars <- mean(corrintSARS*sdvals/(udvals_sars))
-      cell_ratio_cwd <- mean(corrintCWD*sdvals/(udvals_cwd))
+      cell_ratio_sars <- mean(corrintSARS*sdvals/udvals_sars)
+      cell_ratio_cwd <- mean(corrintCWD*sdvals/udvals_cwd)
       ###
       
       # create output rasters for integrated corr term, set values to 0

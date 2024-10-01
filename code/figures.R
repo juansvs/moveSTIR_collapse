@@ -151,6 +151,7 @@ p5
 
 # FOI ratio vs tracking length
 lendb <- read_csv("outputs/sim_res_trklen_240929.csv")
+# lendb$social <- rep(rep(c(0,0.7,0.95,1),each = 4), 20)
 p.len <- lendb %>% ggplot(aes(steps,(foi_full1-foi_ud)/foi_ud))+
   geom_hline(yintercept = 1, linetype =2)+
   geom_point(aes(color = factor(social)), show.legend = F, position = position_dodge(width = 100))+
