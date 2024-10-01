@@ -128,7 +128,7 @@ p4 <- filter(outdf, Ax == max(Ax), .by = sim) %>%
   ggplot(aes(1/nu/24,(foi_full2-foi_ud)/foi_ud,color=factor(social)))+
   geom_hline(yintercept = 1, linetype=2)+
   geom_point(show.legend = F, position = position_dodge(width = 0.2))+
-  scale_y_log10(labels = scales::label_comma())+
+  # scale_y_log10(labels = scales::label_comma())+
   theme_minimal(base_size = 14)+
   labs(x = "Mean decay time (days)", y = "FOI ratio", color = "Interaction")+  
   scale_color_discrete(type=hcl.colors(4, "BluGrn", rev=T))
@@ -160,3 +160,12 @@ p.len <- lendb %>% ggplot(aes(steps,(foi_full1-foi_ud)/foi_ud))+
   labs(x = "Tracking time (steps)", y = "FOI ratio")+
   theme_minimal(base_size = 12)
 p.len
+
+# combined fig
+# Export combined figure
+library(ggpubr)
+pdf("docs/figures/sim_results.pdf", width = 8.6,height = 6)
+ggarrange(p1,p2,p5,p4,p.len,as_ggplot(get_legend(p3)), align = "hv", 
+          labels=c("a","b","c","d","e"))+
+  theme(plot.margin = unit(c(2,5,2,2),"mm"))
+dev.off()
