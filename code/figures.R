@@ -1,3 +1,5 @@
+library(tidyverse)
+
 #### Steps diagram in base R ####
 x11(width = 9, height = 6, pointsize = 10, bg = "white")
 par(fig = c(0/18,3.5/18,6.25/12, 9.75/12), mar = c(0,0,0,0))
@@ -101,14 +103,15 @@ mtext("Lag",1, outer = T, line = 1, cex=1.3)
 mtext("Correlation",2, outer = T, line = 1, cex=1.3)
 
 #### Simulation results ####
-outdf <- read.csv("outputs/sim_res_240906.csv")
+outdf <- read_csv("outputs/sim_res_241001.csv")
+outdf
 # Relative FOI w/ vs w/o corr
 p1 <- filter(outdf, nu == 0.5, Ax == 25) %>% ggplot(aes(social, foi_full1/mean(foi_ud),group = social))+
   # geom_boxplot(outlier.shape = NA, color = "darkred")+
   geom_jitter(color = "darkred")+
   # geom_boxplot(aes(y = foi_ud/mean(foi_ud)), color = "steelblue")+
   geom_jitter(aes(y = foi_ud/mean(foi_ud)), color = "steelblue")+
-  theme_minimal(base_size = 14)+
+  theme_minimal(base_size = 12)+
   labs(x = "Interaction strength", y = "Relative FOI")+
   scale_y_log10(labels = scales::label_comma())
   
@@ -118,30 +121,31 @@ p2 <- filter(outdf, social==0, nu == 0.5, Ax==25) %>%
   ggplot(aes(overlap, ((foi_full1-foi_ud)/foi_ud)))+
   geom_hline(yintercept = 1,linetype=2)+
   geom_point()+
-  theme_minimal(base_size = 14)+
+  lims(x=c(0,1))+
+  theme_minimal(base_size = 12)+
   labs(x = "Home Range Overlap", y = "FOI ratio")
 p2
 
 # FOI ratio vs. decay time
-p4 <- filter(outdf, Ax == max(Ax), .by = sim) %>% 
+p4 <- filter(outdf, Ax == max(Ax), .by = sim, social!=0.5) %>% 
   # filter(social %in% c(0,0.7,0.95,1)) %>% 
-  ggplot(aes(1/nu/24,(foi_full2-foi_ud)/foi_ud,color=factor(social)))+
+  ggplot(aes(1/nu/24,(foi_full1-foi_ud)/foi_ud,color=factor(social)))+
   geom_hline(yintercept = 1, linetype=2)+
   geom_point(show.legend = F, position = position_dodge(width = 0.2))+
   # scale_y_log10(labels = scales::label_comma())+
-  theme_minimal(base_size = 14)+
+  theme_minimal(base_size = 12)+
   labs(x = "Mean decay time (days)", y = "FOI ratio", color = "Interaction")+  
   scale_color_discrete(type=hcl.colors(4, "BluGrn", rev=T))
 p4
 
 # FOI ratio vs. relative cell size
-p5 <- filter(outdf, nu==0.125) %>% 
+p5 <- filter(outdf, nu==0.125, social!=0.5) %>% 
   # group_by(sim) %>% 
   mutate(Atoti = max(Atoti), Atotj = max(Atotj), .by = sim) %>% 
   ggplot(aes(Ax/Atoti/1e4,(foi_full1-foi_ud)/foi_ud, color = factor(social)))+
   # stat_smooth(method = "lm", se = F)+
   geom_point(show.legend = F)+
-  theme_minimal(base_size = 14)+
+  theme_minimal(base_size = 12)+
   labs(x = expression(paste("Relative cell size ",A[x]/A[tot]," (%)")), y = "FOI ratio", color = "Interaction")+
   scale_color_discrete(type=hcl.colors(4, "BluGrn", rev=T))+
   # scale_x_continuous(labels = \(x) parse(text=gsub("e", " %*% 10^", scales::scientific_format()(x))))
@@ -150,14 +154,15 @@ p5 <- filter(outdf, nu==0.125) %>%
 p5
 
 # FOI ratio vs tracking length
-lendb <- read_csv("outputs/sim_res_trklen_240929.csv")
+lendb <- read_csv("outputs/sim_res_trklen_241001.csv")
+lendb
 # lendb$social <- rep(rep(c(0,0.7,0.95,1),each = 4), 20)
-p.len <- lendb %>% ggplot(aes(steps,(foi_full1-foi_ud)/foi_ud))+
+p.len <- filter(lendb, ncells>5) %>% ggplot(aes(steps,cellratio1))+
   geom_hline(yintercept = 1, linetype =2)+
   geom_point(aes(color = factor(social)), show.legend = F, position = position_dodge(width = 100))+
   # scale_y_log10()+
   scale_color_manual(values = hcl.colors(4,"BluGrn", rev = T))+
-  labs(x = "Tracking time (steps)", y = "FOI ratio")+
+  labs(x = "Tracking time (steps)", y = "Per-cell FOI ratio")+
   theme_minimal(base_size = 12)
 p.len
 
