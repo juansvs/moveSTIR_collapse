@@ -587,8 +587,8 @@ x11(width = 9, height = 6)
 
 mycols <- c("#332288", "#117733", "#44AA99", "#88CCEE", "#DDCC77")
 png("docs/figures/deer_results.png", 9,6,"in",res = 300)
-
-par(omi = c(3,0.2,0.1,5.5),mar = c(1,2,0,0))
+# pdf("docs/figures/deer_results.pdf", 9,6)
+par(omi = c(3,0.5,0.1,5.2),mar = c(1,2,0,0))
 #raster::plot(dat_move,type='n', xlab = "Easting (m)", ylab = "Northing (m)", cex.axis = 0.8, cex.lab = 0.8)
 plot.window(c(299500,302600), c(3884500,3888900), asp = 1, xaxs = "i",yaxs = "i")
 plot(deer_UDs, col.level=NA, col.DF=NA,units=F, ann = F,xaxt = 'n',yaxt = 'n', bty='n')
@@ -669,26 +669,27 @@ with(list(db = deer_FOIs_nus_prewt2,
 
 # FOI vs overlap plot
 # par(omi = c(3,3.2,0.1,3),new=T, cex = 0.8)
-par(mar=c(2,2,0,0), omi = c(3,3.5,0.5,2),new=T)
+par(mar=c(2,4,0,0), omi = c(3,4.3,0.5,1.8),new=T)
 with(list(db = deer_FOIs_nus_prewt2), {
-  plot(db$overlap, db$cell_ratio_SARS, xlim = c(0,1), type = 'n',ann = F, xaxt = 'n',yaxt = 'n', cex.axis=0.8)
+  plot(db$overlap, db$cell_ratio_SARS, xlim = c(0,1), type = 'n',ann = F, xaxt = 'n',yaxt = 'n')
   grid()
+  box()
   points(db$overlap, db$cell_ratio_CWD, bg = pathcols[2], pch=24)
   points(db$overlap, db$cell_ratio_SARS, bg = pathcols[1], pch=21)
   axis(1,cex.axis = 0.8, tcl = -0.3, padj = -1.5)
-  axis(2,cex.axis = 0.8,  tcl = -0.3, hadj = 0.5, las=1)
-  mtext("Home Range Overlap", 1,1.1)
-  mtext("FOI ratio",2, 1.2)
+  axis(2,cex.axis = 0.8,  tcl = -0.3, hadj = 0.7, las=1)
+  mtext("Home Range Overlap", 1,1.1,cex = 1.2)
+  mtext("FOI ratio",2, 2.7, cex=1.2)
 })
 
 # add labels
 par(oma = c(0,0,0,0), mar = c(0,0,0,0), new = T)
 plot.new()
 plot.window(c(0,1),c(0,1))
-text(x = c(0,0.4,0), 
+text(x = c(0,0.48,0), 
      y = c(0.97,0.97,0.43), 
      labels = c("a","b","c"), cex = 1.4, font = 2)
-
+dev.off()
 
 ###
 ### plots of overall 
